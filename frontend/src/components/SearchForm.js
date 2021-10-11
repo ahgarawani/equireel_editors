@@ -22,7 +22,7 @@ function SearchForm({ searchFunc, clearSearch }) {
   useEffect(() => {
     async function fetchSeasons() {
       try {
-        let res = await fetch(`${ROOT_URL}/events/getSeasons`, {
+        let res = await fetch(`${ROOT_URL}/events/seasons`, {
           headers: {
             Authorization: "Bearer " + currentUser.token,
           },
@@ -44,7 +44,7 @@ function SearchForm({ searchFunc, clearSearch }) {
   }, [formValues]);
 
   const fetchEventsBySeason = async (season) => {
-    let url = new URL(`${ROOT_URL}/events/getEventsBySeason`),
+    let url = new URL(`${ROOT_URL}/events/eventsBySeason`),
       params = { season: season };
     Object.keys(params).forEach((key) =>
       url.searchParams.append(key, params[key])
