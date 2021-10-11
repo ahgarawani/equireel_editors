@@ -90,7 +90,7 @@ exports.markItemsDone = async (req, res, next) => {
   const event = req.body.event;
   const type = req.body.type;
   const itemsValuesArray = req.body.itemsValuesArray;
-  const editorId = req.body.userId;
+  const editorId = req.userId;
 
   let nonExistentItems = { event, type, itemsValues: [] };
   let duplicateItems = { event, type, itemsValues: [] };
