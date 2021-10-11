@@ -8,7 +8,7 @@ import {
   Box,
   useDisclosure,
 } from "@chakra-ui/react";
-import { IoSettingsSharp } from "react-icons/io5";
+//import { IoSettingsSharp } from "react-icons/io5";
 import { HiOutlineLogout, HiSearch } from "react-icons/hi";
 
 import ComponentGate from "./ComponentGate.js";

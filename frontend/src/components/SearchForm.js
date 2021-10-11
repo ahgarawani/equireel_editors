@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { HStack, Select, Input, IconButton } from "@chakra-ui/react";
 
 import { HiSearch, HiX } from "react-icons/hi";
@@ -18,6 +18,18 @@ function SearchForm({ searchFunc, clearSearch }) {
   });
 
   const currentUser = useAuthState();
+
+  const performSearch = useCallback(() => {
+    if (formValues.season === "" || formValues.event === "") {
+      return;
+    }
+    const query = {
+      event: formValues.event,
+      type: formValues.type,
+      itemsStr: formValues.itemsValues,
+    };
+    searchFunc(query, currentUser);
+  }, [currentUser, formValues, searchFunc]);
 
   useEffect(() => {
     async function fetchSeasons() {
@@ -41,7 +53,7 @@ function SearchForm({ searchFunc, clearSearch }) {
 
   useEffect(() => {
     performSearch();
-  }, [formValues]);
+  }, [formValues, performSearch]);
 
   const fetchEventsBySeason = async (season) => {
     let url = new URL(`${ROOT_URL}/events/eventsBySeason`),
@@ -74,18 +86,6 @@ function SearchForm({ searchFunc, clearSearch }) {
     });
     setEvents([]);
     clearSearch();
-  };
-
-  const performSearch = () => {
-    if (formValues.season === "" || formValues.event === "") {
-      return;
-    }
-    const query = {
-      event: formValues.event,
-      type: formValues.type,
-      itemsStr: formValues.itemsValues,
-    };
-    searchFunc(query, currentUser);
   };
 
   return (
