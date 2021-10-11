@@ -48,7 +48,7 @@ function TopSec({ dashboard }) {
       <Spacer />
       <Box>
         <ButtonGroup
-          isRound="true"
+          borderRadius="full"
           size="lg"
           colorScheme="red"
           spacing="6"
@@ -85,7 +85,7 @@ function TopSec({ dashboard }) {
         </Box>
         <IconButton
           icon={<HiSearch />}
-          isRound="true"
+          borderRadius="full"
           size="md"
           colorScheme="red"
           variant="outline"
@@ -96,7 +96,7 @@ function TopSec({ dashboard }) {
         <SearchBoxModal modalControls={{ isOpen: isOpen, onClose: onClose }} />
         <IconButton
           icon={<HiOutlineLogout />}
-          isRound="true"
+          borderRadius="full"
           size="md"
           colorScheme="red"
           variant="outline"
@@ -107,7 +107,7 @@ function TopSec({ dashboard }) {
         {/* <IconButton
           aria-label="settings"
           icon={<IoSettingsSharp />}
-          isRound="true"
+          borderRadius="full"
           size="lg"
           colorScheme="red"
           variant="outline"

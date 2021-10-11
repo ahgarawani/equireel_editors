@@ -90,7 +90,7 @@ function SummeriesSlider() {
                   JSON.stringify(displayedMonth) && (
                   <IconButton
                     icon={<IoIosArrowBack />}
-                    isRound="true"
+                    borderRadius="full"
                     size="lg"
                     colorScheme="red"
                     variant="ghost"
@@ -102,7 +102,7 @@ function SummeriesSlider() {
                   JSON.stringify(displayedMonth) && (
                   <IconButton
                     icon={<IoIosArrowForward />}
-                    isRound="true"
+                    borderRadius="full"
                     size="lg"
                     colorScheme="red"
                     variant="ghost"

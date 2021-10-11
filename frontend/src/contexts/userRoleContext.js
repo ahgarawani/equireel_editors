@@ -17,36 +17,34 @@ export const UserRoleProvider = ({ children }) => {
   const currentUser = useAuthState();
 
   const [initialUserRole, setInitialUserRole] = useState(
-    currentUser.userDetails.role || ""
+    currentUser.userDetails.role || "editor"
   );
 
   useEffect(() => {
     const fetchUserRole = async () => {
       try {
-        if (Boolean(currentUser.token)) {
-          let res = await fetch(`${ROOT_URL}/auth/role`, {
-            headers: {
-              Authorization: "Bearer " + currentUser.token,
-            },
-          });
-          if (res.status !== 200) {
-            throw new Error("Failed to fetch role.");
-          }
-          let resData = await res.json();
-          setInitialUserRole(resData.role);
-          localStorage.setItem(
-            "currentUser",
-            JSON.stringify({
-              token: currentUser.token,
-              user: { ...currentUser.userDetails, role: initialUserRole },
-            })
-          );
+        let res = await fetch(`${ROOT_URL}/auth/role`, {
+          headers: {
+            Authorization: "Bearer " + currentUser.token,
+          },
+        });
+        if (res.status !== 200) {
+          throw new Error("Failed to fetch role.");
         }
+        let resData = await res.json();
+        setInitialUserRole(resData.role);
+        localStorage.setItem(
+          "currentUser",
+          JSON.stringify({
+            token: currentUser.token,
+            user: { ...currentUser.userDetails, role: initialUserRole },
+          })
+        );
       } catch (err) {
         console.log(err);
       }
     };
-    fetchUserRole();
+    if (Boolean(currentUser.token)) fetchUserRole();
   }, [ROOT_URL, currentUser, initialUserRole]);
 
   return (

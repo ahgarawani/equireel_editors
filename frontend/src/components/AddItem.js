@@ -66,7 +66,6 @@ function AddItem() {
   }, [ROOT_URL, currentUser.token]);
 
   async function fetchEventsBySeason(season) {
-    console.log(season);
     let url = new URL(`${ROOT_URL}/events/eventsBySeason`),
       params = { season: season };
     Object.keys(params).forEach((key) =>
@@ -120,7 +119,6 @@ function AddItem() {
         throw new Error("Marking items as done failed!");
       }
       const resData = await res.json();
-      console.log(resData);
       if (res.status === 201) {
         toast({
           title: "Marking As Done",

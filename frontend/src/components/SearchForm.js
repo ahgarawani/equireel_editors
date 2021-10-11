@@ -166,7 +166,7 @@ function SearchForm({ searchFunc, clearSearch }) {
       />
       <IconButton
         icon={<HiSearch />}
-        isRound="true"
+        borderRadius="full"
         size="md"
         colorScheme="red"
         variant="solid"
@@ -175,7 +175,7 @@ function SearchForm({ searchFunc, clearSearch }) {
       />
       <IconButton
         icon={<HiX />}
-        isRound="true"
+        borderRadius="full"
         size="md"
         colorScheme="gray"
         variant="solid"
