@@ -6,9 +6,9 @@ const isAuth = require("../middleware/is-auth");
 
 const router = express.Router();
 
-router.get("/sync", itemsController.sync);
+router.get("/sync", isAuth, itemsController.sync);
 
-router.get("/", itemsController.getItems);
+//router.get("/", itemsController.getItems);
 
 router.get("/search", isAuth, itemsController.search);
 

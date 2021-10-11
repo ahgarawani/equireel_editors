@@ -21,7 +21,7 @@ exports.login = (req, res, next) => {
           email: loadedUser.email,
           userId: loadedUser._id.toString(),
         },
-        "somesupersecretsecret",
+        JWT_SECRET_KEY,
         { expiresIn: "30d" }
       );
       res.status(200).json({

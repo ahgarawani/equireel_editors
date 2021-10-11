@@ -8,6 +8,6 @@ const router = express.Router();
 
 router.get("/seasons", isAuth, eventsController.getSeasons);
 router.get("/eventsBySeason", isAuth, eventsController.getEventsBySeason);
-router.post("/", eventsController.addEvent);
+router.post("/", isAuth, eventsController.addEvent);
 
 module.exports = router;
