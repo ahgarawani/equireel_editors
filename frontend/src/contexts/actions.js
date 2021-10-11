@@ -1,4 +1,4 @@
-const ROOT_URL = "http://localhost:8080/auth";
+const ROOT_URL = process.env.REACT_APP_API_HOST_URL;
 
 export async function loginUser(dispatch, loginPayload) {
   const requestOptions = {
@@ -9,7 +9,7 @@ export async function loginUser(dispatch, loginPayload) {
 
   try {
     dispatch({ type: "REQUEST_LOGIN" });
-    let response = await fetch(`${ROOT_URL}/login`, requestOptions);
+    let response = await fetch(`${ROOT_URL}/auth/login`, requestOptions);
     let data = await response.json();
 
     if (data.user) {
