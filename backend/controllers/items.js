@@ -277,7 +277,7 @@ exports.sync = async (req, res, next) => {
 
   const numOfRows = aColumn.data.values.length;
 
-  const range = `Orders!A${numOfRows - 10}:${String.fromCharCode(
+  const range = `Orders!A${numOfRows - 500}:${String.fromCharCode(
     65 + indices.type
   )}${numOfRows}`;
 
