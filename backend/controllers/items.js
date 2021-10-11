@@ -71,16 +71,6 @@ exports.getItemsByMonth = async (req, res, next) => {
       .sort({ "lifeCycle.doneAt": 1 });
     let daysItems = [];
     if (items.length !== 0) {
-      daysItems = [
-        {
-          day: items[0].lifeCycle.doneAt,
-          eventName: items[0].event.name,
-          type: items[0].type,
-          noItems: 1,
-          items: [items[0].value],
-          price: items[0].price,
-        },
-      ];
       for (const item of items) {
         updateDaysArrayWithItem(daysItems, item);
       }
