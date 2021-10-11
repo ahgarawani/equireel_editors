@@ -29,7 +29,6 @@ exports.login = (req, res, next) => {
         user: {
           id: loadedUser._id.toString(),
           name: loadedUser.name,
-          role: loadedUser.role,
           startedAt: loadedUser.startedAt,
         },
       });

@@ -16,9 +16,7 @@ export const UserRoleProvider = ({ children }) => {
   const ROOT_URL = process.env.REACT_APP_API_HOST_URL;
   const currentUser = useAuthState();
 
-  const [initialUserRole, setInitialUserRole] = useState(
-    currentUser.userDetails.role || "editor"
-  );
+  const [initialUserRole, setInitialUserRole] = useState("editor");
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -33,13 +31,6 @@ export const UserRoleProvider = ({ children }) => {
         }
         let resData = await res.json();
         setInitialUserRole(resData.role);
-        localStorage.setItem(
-          "currentUser",
-          JSON.stringify({
-            token: currentUser.token,
-            user: { ...currentUser.userDetails, role: initialUserRole },
-          })
-        );
       } catch (err) {
         console.log(err);
       }
