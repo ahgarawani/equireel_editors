@@ -44,13 +44,31 @@ function AdminDashboard() {
   const handleSync = async () => {
     setIsSyncing(true);
     try {
-      await fetch(`${ROOT_URL}/items/sync`, {
+      const res = await fetch(`${ROOT_URL}/items/sync`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + currentUser.token,
         },
       });
+      const resData = await res.json();
       setIsSyncing(false);
+      if (res.status !== 200) {
+        toast({
+          title: "Syncing",
+          description: "Syncing Failed! Please, try again!",
+          status: "error",
+          duration: 10000,
+          isClosable: true,
+        });
+        throw Error(resData.message);
+      }
+      toast({
+        title: "Syncing",
+        description: `${resData.message}. ${resData.newVideosCount} new videos were added.`,
+        status: "success",
+        duration: 6000,
+        isClosable: true,
+      });
     } catch (err) {
       console.log(err);
     }

@@ -1,0 +1,10 @@
+{
+  "env": {
+    "MONGODB_USERNAME": "ahgarawani",
+    "MONGODB_PASSWORD": "10ToThe-6898",
+    "MONGODB_DB_NAME": "equireel_editors1",
+    "JWT_SECRET_KEY": "jwtsecretforequireeleditorsapi",
+    "GOOGLE_APPLICATION_CREDENTIALS": "./configs/sheetsCredentials.json",
+    "NUM_OF_ROWS_TO_SYNC": "250"
+  }
+}

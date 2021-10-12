@@ -6,6 +6,7 @@ const Item = require("../models/item");
 const Event = require("../models/event");
 
 const addEvent = require("./events").addEventService;
+const item = require("../models/item");
 
 const datesAreOnSameDay = (first, second) => {
   return (
@@ -214,157 +215,6 @@ exports.search = async (req, res, next) => {
   }
 };
 
-exports.sync = async (req, res, next) => {
-  const userToken = req.body.token;
-  const auth = new google.auth.GoogleAuth({
-    scopes: "https://www.googleapis.com/auth/spreadsheets.readonly",
-  });
-
-  const client = await auth.getClient();
-
-  const googleSheets = google.sheets({ version: "v4", auth: client });
-
-  const spreadsheetId = "1dlDPWynX7nxRJTS2nZ0GliGlIDXhYKILCEukt8C2NAE";
-
-  //Create proper indices json
-  const headerRow = await googleSheets.spreadsheets.values.get({
-    auth,
-    spreadsheetId,
-    range: "Orders!1:1",
-  });
-  const headerRowValues = headerRow.data.values[0];
-
-  const indices = {
-    timestamp: headerRowValues.indexOf("Timestamp"),
-    eventName: headerRowValues.indexOf("Event Name"),
-    horseNo: headerRowValues.indexOf("Horse Number"),
-    type: headerRowValues.indexOf("Type"),
-  };
-
-  //Creating a proper range
-  const aColumn = await googleSheets.spreadsheets.values.get({
-    auth,
-    spreadsheetId,
-    range: "Orders!A:A",
-  });
-
-  const numOfRows = aColumn.data.values.length;
-
-  const range = `Orders!A${numOfRows - 500}:${String.fromCharCode(
-    65 + indices.type
-  )}${numOfRows}`;
-
-  const spreadSheet = await googleSheets.spreadsheets.get({
-    auth,
-    spreadsheetId,
-    ranges: [range],
-    includeGridData: true,
-  });
-
-  const sheetRows = spreadSheet.data.sheets[0].data[0].rowData;
-
-  let newVideos = [];
-
-  console.log("in loop");
-
-  for (const row of sheetRows) {
-    const timestamp = row.values[indices.timestamp].formattedValue || "";
-    const eventName = row.values[indices.eventName].formattedValue;
-    const horseNo = {
-      value: row.values[indices.horseNo].formattedValue,
-      bgColor: row.values[indices.horseNo].effectiveFormat.backgroundColor,
-    };
-    const type = {
-      value: row.values[indices.type].formattedValue || "XC",
-      bgColor: row.values[indices.type].effectiveFormat.backgroundColor,
-    };
-
-    //Check if order is admissble
-    //Ignore if order in red or cyan
-    if (
-      !eventName ||
-      colorIsRed(horseNo.bgColor) ||
-      new RegExp("#N/A|#REF!").test(horseNo.value) ||
-      !horseNo.value
-    ) {
-      continue;
-    }
-
-    //Check if event is in the database
-
-    let event = await Event.findOne({
-      name: eventName,
-    });
-
-    if (!event) {
-      //If event is not in the database add it
-      const season = eventName.slice(-4);
-      if (!isNaN(season)) {
-        //event = newEvent;
-
-        event = await addEvent(season, eventName);
-        //console.log("added", event.name);
-      } else {
-        continue;
-      }
-    }
-
-    const xcStr = "XC|INQUIRIES|TEAM|CHASE|HUNTER|TRIALS".toLowerCase();
-    const sjStr = "SJ".toLowerCase();
-
-    //Create types array
-    let types = type.value
-      .split(" & ")
-      .filter((word) => {
-        if (
-          new RegExp(sjStr).test(word.toLowerCase()) &&
-          colorIsRed(type.bgColor)
-        )
-          return false;
-        return new RegExp(xcStr + "|" + sjStr).test(word.toLowerCase());
-      })
-      .map((word) =>
-        new RegExp(xcStr).test(word.toLowerCase()) ? "XC" : "SJ"
-      );
-
-    let video = {
-      event: event._id,
-      value: horseNo.value,
-      lifeCycle: {
-        createdAt: Date.parse(timestamp) ? new Date(timestamp) : new Date(),
-      },
-    };
-
-    //Loop over types array
-    for (const type of types) {
-      let item = await Item.findOne({
-        event: video.event,
-        value: video.value,
-        type,
-      });
-      //Ignore if the video is in the database
-      if (!item) {
-        //If the video not in the database add to the ddb
-        item = new Item({ ...video, type });
-
-        newVideos.push({ ...video, type });
-        item = await item.save();
-      }
-      if (colorIsCyan(horseNo.bgColor)) {
-        item.deactivate();
-        await item.save();
-      }
-    }
-  }
-  console.log("Out of loop");
-
-  res.json({
-    message: "got them",
-    num: newVideos.length,
-    vids: newVideos,
-  });
-};
-
 exports.endWeek = (req, res, next) => {
   invoicesIndices.setWeek(invoicesIndices.getWeek() + 1);
   res.status(200).json({
@@ -390,120 +240,184 @@ exports.endMonth = (req, res, next) => {
   });
 };
 
-exports.getItems = async (req, res, next) => {
-  const items = await Item.find();
-  if (!items) {
-    res.status(404).json({ message: "nothing" });
-  }
-  let vas = [];
-  for (const item of items) {
-    vas.push(await item.updateItemPrice());
-  }
-  res.status(200).json({
-    message: "here",
-    items: vas,
-  });
-  //invoicesIndices.setMonth("August 2021");
-  //res.status(200).json({ month: invoicesIndices.getMonth() });
-};
+exports.sync = async (req, res, next) => {
+  try {
+    const auth = new google.auth.GoogleAuth({
+      scopes: "https://www.googleapis.com/auth/spreadsheets.readonly",
+    });
 
-exports.refactoringSync = async (req, res, next) => {
-  const auth = new google.auth.GoogleAuth({
-    keyFile: "./configs/sheetsCredentials.json",
-    scopes: "https://www.googleapis.com/auth/spreadsheets.readonly",
-  });
+    const client = await auth.getClient();
 
-  const client = await auth.getClient();
+    const googleSheets = google.sheets({ version: "v4", auth: client });
 
-  const googleSheets = google.sheets({ version: "v4", auth: client });
+    const spreadsheetId = "1dlDPWynX7nxRJTS2nZ0GliGlIDXhYKILCEukt8C2NAE";
 
-  const spreadsheetId = "1dlDPWynX7nxRJTS2nZ0GliGlIDXhYKILCEukt8C2NAE";
+    //Create proper indices json
+    const [headerRow, aColumn] = await Promise.all([
+      googleSheets.spreadsheets.values.get({
+        auth,
+        spreadsheetId,
+        range: "Orders!1:1",
+      }),
+      googleSheets.spreadsheets.values.get({
+        auth,
+        spreadsheetId,
+        range: "Orders!A:A",
+      }),
+    ]);
 
-  //Create proper indices json
-  const headerRow = await googleSheets.spreadsheets.values.get({
-    auth,
-    spreadsheetId,
-    range: "Orders!1:1",
-  });
-  const headerRowValues = headerRow.data.values[0];
+    const headerRowValues = headerRow.data.values[0];
 
-  const indices = {
-    timestamp: headerRowValues.indexOf("Timestamp"),
-    eventName: headerRowValues.indexOf("Event Name"),
-    horseNo: headerRowValues.indexOf("Horse Number"),
-    type: headerRowValues.indexOf("Type"),
-  };
+    const indices = {
+      timestamp: headerRowValues.indexOf("Timestamp"),
+      eventName: headerRowValues.indexOf("Event Name"),
+      horseNo: headerRowValues.indexOf("Horse Number"),
+      type: headerRowValues.indexOf("Type"),
+    };
 
-  //Creating a proper range
-  const aColumn = await googleSheets.spreadsheets.values.get({
-    auth,
-    spreadsheetId,
-    range: "Orders!A:A",
-  });
+    const numOfRows = aColumn.data.values.length;
 
-  const numOfRows = aColumn.data.values.length;
+    const range = `Orders!A${
+      numOfRows - Number(process.env.NUM_OF_ROWS_TO_SYNC)
+    }:${String.fromCharCode(65 + indices.type)}${numOfRows}`;
 
-  const range = `Orders!A${numOfRows - 500}:${String.fromCharCode(
-    65 + indices.type
-  )}${numOfRows}`;
+    const spreadSheet = await googleSheets.spreadsheets.get({
+      auth,
+      spreadsheetId,
+      ranges: [range],
+      includeGridData: true,
+    });
 
-  const spreadSheet = await googleSheets.spreadsheets.get({
-    auth,
-    spreadsheetId,
-    ranges: [range],
-    includeGridData: true,
-  });
+    const admissbleRows = spreadSheet.data.sheets[0].data[0].rowData.flatMap(
+      (row) => {
+        const timestamp = row.values[indices.timestamp].formattedValue || "";
+        const eventName = row.values[indices.eventName].formattedValue;
+        const horseNo = {
+          value: row.values[indices.horseNo].formattedValue,
+          bgColor: row.values[indices.horseNo].effectiveFormat.backgroundColor,
+        };
+        const type = {
+          value: row.values[indices.type].formattedValue || "XC",
+          bgColor: row.values[indices.type].effectiveFormat.backgroundColor,
+        };
+        if (
+          !eventName ||
+          colorIsRed(horseNo.bgColor) ||
+          new RegExp("#N/A|#REF!").test(horseNo.value) ||
+          !horseNo.value
+        ) {
+          return [];
+        }
+        return [{ timestamp, eventName, horseNo, type }];
+      }
+    );
 
-  const sheetRows = spreadSheet.data.sheets[0].data[0].rowData.map((row) => ({
-    timestamp: row.values[indices.timestamp].formattedValue || "",
-    eventName: row.values[indices.eventName].formattedValue,
-    horseNo: {
-      value: row.values[indices.horseNo].formattedValue,
-      bgColor: row.values[indices.horseNo].effectiveFormat.backgroundColor,
-    },
-    type: {
-      value: row.values[indices.type].formattedValue || "XC",
-      bgColor: row.values[indices.type].effectiveFormat.backgroundColor,
-    },
-  }));
+    const distinctEvents = admissbleRows.flatMap((uRow, index, self) =>
+      index === self.findIndex((lRow) => lRow.eventName === uRow.eventName)
+        ? [uRow.eventName]
+        : []
+    );
 
-  const admissbleRows = sheetRows.filter((row) => {
-    const { timestamp, eventName, horseNo, type } = row;
-    if (
-      !eventName ||
-      colorIsRed(horseNo.bgColor) ||
-      new RegExp("#N/A|#REF!").test(horseNo.value) ||
-      !horseNo.value
-    ) {
-      return false;
-    }
-    return true;
-  });
+    const dbEvents = await Promise.all(
+      distinctEvents.map((eventName) => {
+        return Event.findOne(
+          {
+            name: eventName,
+          },
+          "name"
+        );
+      })
+    );
 
-  //console.log(admissbleRows[490]);
+    const eventsToAdd = dbEvents.flatMap((event, index) => {
+      if (!event) {
+        const eventName = distinctEvents[index];
+        if (!isNaN(eventName.slice(-4))) return distinctEvents[index];
+      }
+      return [];
+    });
 
-  const events = await Promise.all(
-    admissbleRows.map(({ eventName }) => {
-      return Event.findOne(
-        {
-          name: eventName,
+    const newEvents = await Promise.all(
+      eventsToAdd.map((eventName) => {
+        return addEvent(eventName.slice(-4), eventName);
+      })
+    );
+
+    const eventsToIds = distinctEvents.reduce((totalObj, eventName, index) => {
+      if (dbEvents[index]) {
+        return { ...totalObj, [eventName]: dbEvents[index]._id };
+      } else {
+        return {
+          ...totalObj,
+          [eventName]: newEvents[eventsToAdd.indexOf(eventName)]._id,
+        };
+      }
+    }, {});
+
+    const xcStr = "XC|INQUIRIES|TEAM|CHASE|HUNTER|TRIALS".toLowerCase();
+    const sjStr = "SJ".toLowerCase();
+
+    const cleanRows = admissbleRows.flatMap((row) => {
+      const { timestamp, eventName, horseNo, type } = row;
+
+      let video = {
+        event: eventsToIds[eventName],
+        horseNo,
+        lifeCycle: {
+          createdAt: Date.parse(timestamp) ? new Date(timestamp) : new Date(),
         },
-        "-_id name"
-      );
-    })
-  );
-  console.log("Out of loop");
+      };
+      //Create types array
+      return type.value
+        .split(" & ")
+        .filter((word) => {
+          if (
+            new RegExp(sjStr).test(word.toLowerCase()) &&
+            colorIsRed(type.bgColor)
+          )
+            return false;
+          return new RegExp(xcStr + "|" + sjStr).test(word.toLowerCase());
+        })
+        .map((word) =>
+          new RegExp(xcStr).test(word.toLowerCase())
+            ? { ...video, type: "XC" }
+            : { ...video, type: "SJ" }
+        );
+    });
 
-  const nonExistentEvents = events
-    .map((event, index) => {
-      if (!event) return admissbleRows[index].eventName;
-    })
-    .filter((event, index, self) => self.indexOf(event) === index)
-    .filter((event) => (!event ? false : true));
+    const dbVideos = await Promise.all(
+      cleanRows.map((row) =>
+        Item.findOne({
+          event: row.event,
+          value: row.horseNo.value,
+          type: row.type,
+        })
+      )
+    );
 
-  res.json({
-    message: "got them",
-    num: nonExistentEvents.length,
-    vids: nonExistentEvents,
-  });
+    let numOfCyansInDB = 0;
+
+    const newVideos = await Promise.all(
+      cleanRows.flatMap((row, index) => {
+        if (colorIsCyan(row.horseNo.bgColor) || !dbVideos[index]) {
+          const item =
+            dbVideos[index] || new Item({ ...row, value: row.horseNo.value });
+          if (colorIsCyan(row.horseNo.bgColor)) {
+            numOfCyansInDB += dbVideos[index] ? 1 : 0;
+            item.deactivate();
+          }
+          return item.save();
+        }
+        return [];
+      })
+    );
+
+    res.status(200).json({
+      message: "Syncing with the sheet was succesful",
+      newVideosCount: newVideos.length - numOfCyansInDB,
+    });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
 };

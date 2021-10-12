@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "MONGODB_USERNAME=ahgarawani MONGODB_PASSWORD=10ToThe-6898 MONGODB_DB_NAME=equireel_editors JWT_SECRET_KEY=jwtsecretforequireeleditorsapi node app.js",
+    "start": "node app.js",
     "start-server": "node app.js",
     "start:dev": "nodemon app.js"
   },
