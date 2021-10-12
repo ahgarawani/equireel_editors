@@ -8,6 +8,8 @@ const router = express.Router();
 
 router.get("/sync", isAuth, itemsController.sync);
 
+router.get("/", itemsController.getItems);
+
 router.get("/search", isAuth, itemsController.search);
 
 router.get("/itemsByMonth", isAuth, itemsController.getItemsByMonth);
