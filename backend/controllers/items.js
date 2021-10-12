@@ -203,7 +203,7 @@ exports.search = async (req, res, next) => {
         type: result.type,
         itemValue: result.value,
         done: result.done,
-        editor: result.editor.name,
+        editor: result.editor ? result.editor.name : "",
       })),
     });
   } catch (err) {
