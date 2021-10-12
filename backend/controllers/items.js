@@ -214,23 +214,6 @@ exports.search = async (req, res, next) => {
   }
 };
 
-exports.getItems = async (req, res, next) => {
-  const items = await Item.find();
-  if (!items) {
-    res.status(404).json({ message: "nothing" });
-  }
-  let vas = [];
-  for (const item of items) {
-    vas.push(await item.updateItemPrice());
-  }
-  res.status(200).json({
-    message: "here",
-    items: vas,
-  });
-  //invoicesIndices.setMonth("August 2021");
-  //res.status(200).json({ month: invoicesIndices.getMonth() });
-};
-
 exports.sync = async (req, res, next) => {
   const userToken = req.body.token;
   const auth = new google.auth.GoogleAuth({
@@ -379,107 +362,6 @@ exports.sync = async (req, res, next) => {
     message: "got them",
     num: newVideos.length,
     vids: newVideos,
-  });
-};
-
-exports.refactoringSync = async (req, res, next) => {
-  const auth = new google.auth.GoogleAuth({
-    keyFile: "./configs/sheetsCredentials.json",
-    scopes: "https://www.googleapis.com/auth/spreadsheets.readonly",
-  });
-
-  const client = await auth.getClient();
-
-  const googleSheets = google.sheets({ version: "v4", auth: client });
-
-  const spreadsheetId = "1dlDPWynX7nxRJTS2nZ0GliGlIDXhYKILCEukt8C2NAE";
-
-  //Create proper indices json
-  const headerRow = await googleSheets.spreadsheets.values.get({
-    auth,
-    spreadsheetId,
-    range: "Orders!1:1",
-  });
-  const headerRowValues = headerRow.data.values[0];
-
-  const indices = {
-    timestamp: headerRowValues.indexOf("Timestamp"),
-    eventName: headerRowValues.indexOf("Event Name"),
-    horseNo: headerRowValues.indexOf("Horse Number"),
-    type: headerRowValues.indexOf("Type"),
-  };
-
-  //Creating a proper range
-  const aColumn = await googleSheets.spreadsheets.values.get({
-    auth,
-    spreadsheetId,
-    range: "Orders!A:A",
-  });
-
-  const numOfRows = aColumn.data.values.length;
-
-  const range = `Orders!A${numOfRows - 500}:${String.fromCharCode(
-    65 + indices.type
-  )}${numOfRows}`;
-
-  const spreadSheet = await googleSheets.spreadsheets.get({
-    auth,
-    spreadsheetId,
-    ranges: [range],
-    includeGridData: true,
-  });
-
-  const sheetRows = spreadSheet.data.sheets[0].data[0].rowData.map((row) => ({
-    timestamp: row.values[indices.timestamp].formattedValue || "",
-    eventName: row.values[indices.eventName].formattedValue,
-    horseNo: {
-      value: row.values[indices.horseNo].formattedValue,
-      bgColor: row.values[indices.horseNo].effectiveFormat.backgroundColor,
-    },
-    type: {
-      value: row.values[indices.type].formattedValue || "XC",
-      bgColor: row.values[indices.type].effectiveFormat.backgroundColor,
-    },
-  }));
-
-  const admissbleRows = sheetRows.filter((row) => {
-    const { timestamp, eventName, horseNo, type } = row;
-    if (
-      !eventName ||
-      colorIsRed(horseNo.bgColor) ||
-      new RegExp("#N/A|#REF!").test(horseNo.value) ||
-      !horseNo.value
-    ) {
-      return false;
-    }
-    return true;
-  });
-
-  //console.log(admissbleRows[490]);
-
-  const events = await Promise.all(
-    admissbleRows.map(({ eventName }) => {
-      return Event.findOne(
-        {
-          name: eventName,
-        },
-        "-_id name"
-      );
-    })
-  );
-  console.log("Out of loop");
-
-  const nonExistentEvents = events
-    .map((event, index) => {
-      if (!event) return admissbleRows[index].eventName;
-    })
-    .filter((event, index, self) => self.indexOf(event) === index)
-    .filter((event) => (!event ? false : true));
-
-  res.json({
-    message: "got them",
-    num: nonExistentEvents.length,
-    vids: nonExistentEvents,
   });
 };
 
