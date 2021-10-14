@@ -27,8 +27,6 @@ function SearchResultsTable({ searchResults }) {
     }
   }, [searchResults]);
 
-  console.log(areSomeDone);
-
   return (
     <Table variant="simple" size="md">
       <Thead>

@@ -18,6 +18,7 @@ import {
 } from "@chakra-ui/react";
 import SearchForm from "./SearchForm";
 import SearchResultsTable from "./SearchResultsTable";
+import SearchResultsCards from "./SearchResultsCards";
 
 function SearchBoxModal({ modalControls: { isOpen, onClose } }) {
   const ROOT_URL = process.env.REACT_APP_API_HOST_URL;
@@ -79,18 +80,19 @@ function SearchBoxModal({ modalControls: { isOpen, onClose } }) {
             <VStack
               width="95%"
               bg="white"
-              p="4"
               borderColor="gray.200"
               borderWidth="2px"
               borderRadius="xl"
               boxShadow="sm"
             >
-              <SearchForm
-                searchFunc={searchForItems}
-                clearSearch={clearModal}
-              />
+              <Box width="100%" p="4">
+                <SearchForm
+                  searchFunc={searchForItems}
+                  clearSearch={clearModal}
+                />
+              </Box>
 
-              <Divider width="104%" borderColor="gray.200" pt="2%" />
+              <Divider width="100%" borderColor="gray.200" />
               {isLoading ? (
                 <Spinner
                   p="5"
@@ -101,11 +103,27 @@ function SearchBoxModal({ modalControls: { isOpen, onClose } }) {
                   size="md"
                 />
               ) : (
-                <Box width="95%" pt="3%" pb="1%">
+                <Box width="100%" pb={5}>
                   {searchResults.length === 0 ? (
-                    <Heading size="md">Nothing to show!</Heading>
+                    <Heading p={5} size="md">
+                      Nothing to show!
+                    </Heading>
                   ) : (
-                    <SearchResultsTable searchResults={searchResults} />
+                    <>
+                      <Box
+                        width="95%"
+                        p={4}
+                        display={{ base: "none", lg: "inline-block" }}
+                      >
+                        <SearchResultsTable searchResults={searchResults} />
+                      </Box>
+                      <Box
+                        width="100%"
+                        display={{ base: "inline-block", lg: "none" }}
+                      >
+                        <SearchResultsCards searchResults={searchResults} />
+                      </Box>
+                    </>
                   )}
                 </Box>
               )}

@@ -189,7 +189,23 @@ function AdminDashboard() {
 
   return (
     <VStack bg="#fafafa" minH="100vh">
-      <TopSec dashboard="admin" />
+      <Box
+        width="100vw"
+        py={5}
+        px={{ base: 30, lg: 45 }}
+        maxH="100px"
+        position="fixed"
+        zIndex="banner"
+        bg="white"
+        borderBottomWidth="2px"
+        borderColor="gray.200"
+        boxShadow="sm"
+        display="flex"
+        justify="center"
+        align="center"
+      >
+        <TopSec dashboard="admin" />
+      </Box>
       <Flex width="100%" pt="18vh" flexDirection="column" align="center">
         <ButtonGroup
           maxW="75vw"

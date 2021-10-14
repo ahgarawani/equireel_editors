@@ -1,7 +1,6 @@
 import { useState } from "react";
 import {
   Box,
-  VStack,
   HStack,
   Flex,
   Spacer,
@@ -10,8 +9,9 @@ import {
   Heading,
   Collapse,
   useDisclosure,
+  useBreakpointValue,
 } from "@chakra-ui/react";
-import MonthTable from "./MonthTable.js";
+import MonthItems from "./MonthItems.js";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 
 import { useAuthState } from "../contexts";
@@ -31,6 +31,8 @@ function SummeriesSlider() {
   });
 
   const { isOpen, onToggle } = useDisclosure();
+
+  const responsiveSize = useBreakpointValue({ base: "sm", md: "md" });
 
   const formatDate = (date) => {
     const longMonths = {
@@ -66,64 +68,66 @@ function SummeriesSlider() {
   };
 
   return (
-    <Box width="100%" pb="5" px={100}>
-      <VStack
-        width="100%"
-        borderColor="gray.200"
-        boxShadow="sm"
-        borderWidth="2px"
-        borderRadius="xl"
-        p="4"
-        bg="white"
-      >
-        <Flex width="100%" pb={isOpen ? "2" : ""}>
-          <Box>
-            <Heading size="md" p="2">
-              Monthly Summery
-            </Heading>
-          </Box>
-          <Spacer />
-          <Box>
-            {isOpen && (
-              <HStack>
-                {JSON.stringify(monthLimits.lower) !==
-                  JSON.stringify(displayedMonth) && (
-                  <IconButton
-                    icon={<IoIosArrowBack />}
-                    borderRadius="full"
-                    size="lg"
-                    colorScheme="red"
-                    variant="ghost"
-                    onClick={() => slideMonth(-1)}
-                  />
-                )}
-                <Heading size="md">{formatDate(displayedMonth)}</Heading>
-                {JSON.stringify(monthLimits.upper) !==
-                  JSON.stringify(displayedMonth) && (
-                  <IconButton
-                    icon={<IoIosArrowForward />}
-                    borderRadius="full"
-                    size="lg"
-                    colorScheme="red"
-                    variant="ghost"
-                    onClick={() => slideMonth(1)}
-                  />
-                )}
-              </HStack>
-            )}
-          </Box>
-          <Spacer />
-          <Box>
-            <Button onClick={onToggle} colorScheme={isOpen ? "gray" : "red"}>
-              {isOpen ? "Hide" : "Show"}
-            </Button>
-          </Box>
-        </Flex>
-        <Collapse in={isOpen} animateOpacity>
-          {isOpen && <MonthTable month={formatDate(displayedMonth)} />}
-        </Collapse>
-      </VStack>
-    </Box>
+    <Flex width="100%" direction="column" align="center">
+      <Flex width="100%" p="4" align="center">
+        <Box
+          display={{
+            base: isOpen ? "none" : "inline-block",
+            lg: "inline-block",
+          }}
+        >
+          <Heading size="md" p="2">
+            Monthly Summery
+          </Heading>
+        </Box>
+        <Spacer
+          display={{
+            base: isOpen ? "none" : "inline-block",
+            md: "inline-block",
+          }}
+        />
+        <Box>
+          {isOpen && (
+            <HStack>
+              {JSON.stringify(monthLimits.lower) !==
+                JSON.stringify(displayedMonth) && (
+                <IconButton
+                  icon={<IoIosArrowBack />}
+                  borderRadius="full"
+                  size={responsiveSize}
+                  colorScheme="red"
+                  variant="ghost"
+                  onClick={() => slideMonth(-1)}
+                />
+              )}
+              <Heading size={responsiveSize}>
+                {formatDate(displayedMonth)}
+              </Heading>
+              {JSON.stringify(monthLimits.upper) !==
+                JSON.stringify(displayedMonth) && (
+                <IconButton
+                  icon={<IoIosArrowForward />}
+                  borderRadius="full"
+                  size={responsiveSize}
+                  colorScheme="red"
+                  variant="ghost"
+                  onClick={() => slideMonth(1)}
+                />
+              )}
+            </HStack>
+          )}
+        </Box>
+        <Spacer />
+        <Box>
+          <Button onClick={onToggle} colorScheme={isOpen ? "gray" : "red"}>
+            {isOpen ? "Hide" : "Show"}
+          </Button>
+        </Box>
+      </Flex>
+      <Collapse in={isOpen} animateOpacity width="100%">
+        {isOpen && <MonthItems month={formatDate(displayedMonth)} />}
+      </Collapse>
+    </Flex>
   );
 }
 

@@ -1,5 +1,14 @@
 import { useState, useEffect } from "react";
-import { HStack, Select, Input, IconButton } from "@chakra-ui/react";
+import {
+  Flex,
+  Spacer,
+  FormControl,
+  Select,
+  Input,
+  IconButton,
+  ButtonGroup,
+  Heading,
+} from "@chakra-ui/react";
 
 import { HiSearch, HiX } from "react-icons/hi";
 
@@ -89,99 +98,122 @@ function SearchForm({ searchFunc, clearSearch }) {
   };
 
   return (
-    <HStack width="100%" zIndex="banner">
-      <Select
-        placeholder="Season"
-        name="season"
-        value={formValues.season}
-        onChange={(e) => {
-          e.persist();
-          setFormValues({
-            ...formValues,
-            season: e.target.value,
-          });
-          fetchEventsBySeason(e.target.value);
-        }}
-        focusBorderColor="red.500"
-        width="17%"
-        isRequired
+    <FormControl width="100%" p="4">
+      <Heading textAlign="center" size="md" mb="5">
+        Search for Items
+      </Heading>
+      <Spacer />
+      <Flex
+        direction={{ base: "column", lg: "row" }}
+        width="100%"
+        align="center"
       >
-        {seasons.map((season) => (
-          <option key={season} value={Number(season)}>
-            {season}
-          </option>
-        ))}
-      </Select>
-      <Select
-        placeholder="Event"
-        name="event"
-        value={formValues.event}
-        onChange={(e) => {
-          e.persist();
-          setFormValues({
-            ...formValues,
-            event: e.target.value,
-          });
-        }}
-        focusBorderColor="red.500"
-        width="35%"
-      >
-        {events.map((event) => (
-          <option key={event.id} value={JSON.stringify(event)}>
-            {event.name}
-          </option>
-        ))}
-      </Select>
-      <Select
-        placeholder="Type"
-        name="type"
-        value={formValues.type}
-        onChange={(e) => {
-          e.persist();
-          setFormValues({
-            ...formValues,
-            type: e.target.value,
-          });
-        }}
-        focusBorderColor="red.500"
-        width="14%"
-      >
-        <option value="Project">Project</option>
-        <option value="XC">XC</option>
-        <option value="SJ">SJ</option>
-      </Select>
-      <Input
-        placeholder="Items"
-        name="itemsValues"
-        value={formValues.itemsValues}
-        onChange={(e) => {
-          e.persist();
-          setFormValues({
-            ...formValues,
-            itemsValues: e.target.value,
-          });
-        }}
-        focusBorderColor="red.500"
-        width="40%"
-      />
-      <IconButton
-        icon={<HiSearch />}
-        borderRadius="full"
-        size="md"
-        colorScheme="red"
-        variant="solid"
-        mr="4"
-        onClick={performSearch}
-      />
-      <IconButton
-        icon={<HiX />}
-        borderRadius="full"
-        size="md"
-        colorScheme="gray"
-        variant="solid"
-        onClick={clearForm}
-      />
-    </HStack>
+        <Select
+          mb={{ base: "5", lg: "0" }}
+          mr={{ base: "0", lg: "3" }}
+          width={{ base: "90%", lg: "15%" }}
+          placeholder="Season"
+          name="season"
+          value={formValues.season}
+          onChange={(e) => {
+            e.persist();
+            setFormValues({
+              ...formValues,
+              season: e.target.value,
+            });
+            fetchEventsBySeason(e.target.value);
+          }}
+          focusBorderColor="red.500"
+          isRequired
+        >
+          {seasons.map((season) => (
+            <option key={season} value={Number(season)}>
+              {season}
+            </option>
+          ))}
+        </Select>
+        <Select
+          mb={{ base: "5", lg: "0" }}
+          mr={{ base: "0", lg: "3" }}
+          width={{ base: "90%", lg: "30%" }}
+          placeholder="Select an Event"
+          name="event"
+          value={formValues.event}
+          onChange={(e) => {
+            e.persist();
+            setFormValues({
+              ...formValues,
+              event: e.target.value,
+            });
+          }}
+          focusBorderColor="red.500"
+          isRequired
+        >
+          {events.map((event) => (
+            <option key={event.id} value={JSON.stringify(event)}>
+              {event.name}
+            </option>
+          ))}
+        </Select>
+        <Select
+          mb={{ base: "5", lg: "0" }}
+          mr={{ base: "0", lg: "3" }}
+          width={{ base: "90%", lg: "15%" }}
+          placeholder="Type"
+          name="type"
+          value={formValues.type}
+          onChange={(e) => {
+            e.persist();
+            setFormValues({
+              ...formValues,
+              type: e.target.value,
+            });
+          }}
+          focusBorderColor="red.500"
+          isRequired
+        >
+          <option value="Project">Project</option>
+          <option value="XC">XC</option>
+          <option value="SJ">SJ</option>
+        </Select>
+        <Input
+          mb={{ base: "5", lg: "0" }}
+          mr={{ base: "0", lg: "3" }}
+          width={{ base: "90%", lg: "40%" }}
+          placeholder="Items"
+          name="itemsValues"
+          value={formValues.itemsValues}
+          onChange={(e) => {
+            e.persist();
+            setFormValues({
+              ...formValues,
+              itemsValues: e.target.value,
+            });
+          }}
+          focusBorderColor="red.500"
+          isRequired
+        />
+        <ButtonGroup alignSelf="flex-end">
+          <IconButton
+            icon={<HiSearch />}
+            borderRadius="full"
+            size="md"
+            colorScheme="red"
+            variant="solid"
+            mr="4"
+            onClick={performSearch}
+          />
+          <IconButton
+            icon={<HiX />}
+            borderRadius="full"
+            size="md"
+            colorScheme="gray"
+            variant="solid"
+            onClick={clearForm}
+          />
+        </ButtonGroup>
+      </Flex>
+    </FormControl>
   );
 }
 

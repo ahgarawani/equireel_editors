@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import {
+  FormControl,
+  Heading,
   Flex,
-  HStack,
   Select,
   Input,
   Button,
+  ButtonGroup,
   Spinner,
+  Spacer,
   useToast,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -164,120 +167,129 @@ function AddItem() {
     setEvents([]);
   };
 
-  return (
-    <Flex width="100%" justify="center" pt="20vh" pb="4vh">
-      {isLoading ? (
-        <Spinner
-          p="50"
-          thickness="8px"
-          speed="0.65s"
-          emptyColor="gray.200"
-          color="red.500"
-          size="2xl"
-        />
-      ) : (
-        <HStack
-          width="75%"
-          bg="white"
-          p="4"
-          borderColor="gray.200"
-          borderWidth="2px"
-          borderRadius="xl"
-          boxShadow="sm"
+  return isLoading ? (
+    <Spinner
+      p="50"
+      thickness="8px"
+      speed="0.65s"
+      emptyColor="gray.200"
+      color="red.500"
+      size="2xl"
+    />
+  ) : (
+    <FormControl width="100%" p="4">
+      <Heading textAlign="center" size="md" mb="5">
+        Mark Items as Done
+      </Heading>
+      <Spacer />
+      <Flex
+        direction={{ base: "column", lg: "row" }}
+        width="100%"
+        align="center"
+      >
+        <Select
+          mb={{ base: "5", lg: "0" }}
+          mr={{ base: "0", lg: "3" }}
+          width={{ base: "90%", lg: "15%" }}
+          placeholder="Season"
+          name="season"
+          value={addItemFormValues.season}
+          onChange={(e) => {
+            e.persist();
+            setAddItemFormValues({
+              ...addItemFormValues,
+              season: e.target.value,
+            });
+            fetchEventsBySeason(e.target.value);
+          }}
+          focusBorderColor="red.500"
+          isRequired
         >
-          <Select
-            placeholder="Select Season"
-            name="season"
-            value={addItemFormValues.season}
-            onChange={(e) => {
-              e.persist();
-              setAddItemFormValues({
-                ...addItemFormValues,
-                season: e.target.value,
-              });
-              fetchEventsBySeason(e.target.value);
-            }}
-            focusBorderColor="red.500"
-            width="35%"
-            isRequired
-          >
-            {seasons.map((season) => (
-              <option key={season} value={Number(season)}>
-                {season}
-              </option>
-            ))}
-          </Select>
-          <Select
-            placeholder="Select an Event"
-            name="event"
-            value={addItemFormValues.event}
-            onChange={(e) => {
-              e.persist();
-              setAddItemFormValues({
-                ...addItemFormValues,
-                event: e.target.value,
-              });
-            }}
-            focusBorderColor="red.500"
-            width="35%"
-            isRequired
-          >
-            {events.map((event) => (
-              <option key={event.id} value={JSON.stringify(event)}>
-                {event.name}
-              </option>
-            ))}
-          </Select>
-          <Select
-            placeholder="Type"
-            name="type"
-            value={addItemFormValues.type}
-            onChange={(e) => {
-              e.persist();
-              setAddItemFormValues({
-                ...addItemFormValues,
-                type: e.target.value,
-              });
-            }}
-            focusBorderColor="red.500"
-            width="15%"
-            isRequired
-          >
-            <option value="Project">Project</option>
-            <option value="XC">XC</option>
-            <option value="SJ">SJ</option>
-          </Select>
-          <Input
-            placeholder="Items"
-            name="itemsValues"
-            value={addItemFormValues.itemsValues}
-            onChange={(e) => {
-              e.persist();
-              setAddItemFormValues({
-                ...addItemFormValues,
-                itemsValues: e.target.value,
-              });
-            }}
-            focusBorderColor="red.500"
-            width="50%"
-            isRequired
-          />
-          <Button colorScheme="red" px="8" onClick={handleAddItemsSubmit}>
+          {seasons.map((season) => (
+            <option key={season} value={Number(season)}>
+              {season}
+            </option>
+          ))}
+        </Select>
+        <Select
+          mb={{ base: "5", lg: "0" }}
+          mr={{ base: "0", lg: "3" }}
+          width={{ base: "90%", lg: "30%" }}
+          placeholder="Select an Event"
+          name="event"
+          value={addItemFormValues.event}
+          onChange={(e) => {
+            e.persist();
+            setAddItemFormValues({
+              ...addItemFormValues,
+              event: e.target.value,
+            });
+          }}
+          focusBorderColor="red.500"
+          isRequired
+        >
+          {events.map((event) => (
+            <option key={event.id} value={JSON.stringify(event)}>
+              {event.name}
+            </option>
+          ))}
+        </Select>
+        <Select
+          mb={{ base: "5", lg: "0" }}
+          mr={{ base: "0", lg: "3" }}
+          width={{ base: "90%", lg: "15%" }}
+          placeholder="Type"
+          name="type"
+          value={addItemFormValues.type}
+          onChange={(e) => {
+            e.persist();
+            setAddItemFormValues({
+              ...addItemFormValues,
+              type: e.target.value,
+            });
+          }}
+          focusBorderColor="red.500"
+          isRequired
+        >
+          <option value="Project">Project</option>
+          <option value="XC">XC</option>
+          <option value="SJ">SJ</option>
+        </Select>
+        <Input
+          mb={{ base: "5", lg: "0" }}
+          mr={{ base: "0", lg: "3" }}
+          width={{ base: "90%", lg: "40%" }}
+          placeholder="Items"
+          name="itemsValues"
+          value={addItemFormValues.itemsValues}
+          onChange={(e) => {
+            e.persist();
+            setAddItemFormValues({
+              ...addItemFormValues,
+              itemsValues: e.target.value,
+            });
+          }}
+          focusBorderColor="red.500"
+          isRequired
+        />
+        <ButtonGroup alignSelf="flex-end">
+          <Button colorScheme="red" onClick={handleAddItemsSubmit}>
             Add
           </Button>
-          <WorngItemsAlertModal
-            nonExistentItems={nonExistentItems}
-            setNonExistentItems={setNonExistentItems}
-            duplicateItems={duplicateItems}
-            setDuplicateItems={setDuplicateItems}
-            modalControls={{ isOpen: isOpen, onClose: onClose }}
-          />
-          <Button colorScheme="gray" px="8" onClick={clearForm}>
+          <Button colorScheme="gray" onClick={clearForm}>
             Clear
           </Button>
-        </HStack>
-      )}
-    </Flex>
+        </ButtonGroup>
+
+        <WorngItemsAlertModal
+          nonExistentItems={nonExistentItems}
+          setNonExistentItems={setNonExistentItems}
+          duplicateItems={duplicateItems}
+          setDuplicateItems={setDuplicateItems}
+          modalControls={{ isOpen: isOpen, onClose: onClose }}
+        />
+      </Flex>
+    </FormControl>
   );
 }
 
