@@ -6,8 +6,8 @@ let token = localStorage.getItem("currentUser")
   : "";
 
 export const initialState = {
-  userDetails: "" || user,
-  token: "" || token,
+  userDetails: user || "",
+  token: token || "",
   loading: false,
   errorMessage: null,
 };

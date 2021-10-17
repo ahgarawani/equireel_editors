@@ -10,7 +10,7 @@ exports.calculateEventDays = ({ startDate, endDate }) => {
 };
 
 exports.createUTCDate = (dateToParse) => {
-  const date = new Date(dateToParse);
+  const date = dateToParse ? new Date(dateToParse) : new Date();
   return new Date(
     Date.UTC(
       date.getFullYear(),

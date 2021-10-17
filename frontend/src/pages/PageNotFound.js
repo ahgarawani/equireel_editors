@@ -4,11 +4,11 @@ function PageNotFound() {
   return (
     <Flex
       width="100%"
-      height="100vh"
+      height="80vh"
       justifyContent="center"
       alignItems="center"
     >
-      <Heading>Oops! This page doesn't exist!</Heading>
+      <Heading textAlign="center">Oops! This page doesn't exist!</Heading>
     </Flex>
   );
 }

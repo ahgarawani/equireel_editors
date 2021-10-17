@@ -168,14 +168,16 @@ function AddItem() {
   };
 
   return isLoading ? (
-    <Spinner
-      p="50"
-      thickness="8px"
-      speed="0.65s"
-      emptyColor="gray.200"
-      color="red.500"
-      size="2xl"
-    />
+    <Flex width="100%" justify="center" align="center" p="8">
+      <Spinner
+        p="50"
+        thickness="8px"
+        speed="0.65s"
+        emptyColor="gray.200"
+        color="red.500"
+        size="2xl"
+      />
+    </Flex>
   ) : (
     <FormControl width="100%" p="4">
       <Heading textAlign="center" size="md" mb="5">

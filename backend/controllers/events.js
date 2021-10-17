@@ -78,6 +78,7 @@ const addEventService = async (season, name, period) => {
         days,
       },
       appliedRules: appliedRules,
+      active: !calculateDays,
     });
 
     const dbPromises = appliedRules

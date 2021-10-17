@@ -12,6 +12,10 @@ router.get("/search", isAuth, itemsController.search);
 
 router.get("/itemsByMonth", isAuth, itemsController.getItemsByMonth);
 
+router.get("/itemsByWeek", isAuth, itemsController.getItemsByWeek);
+
+router.get("/week", isAuth, itemsController.getWeek);
+
 router.get("/endWeek", isAuth, itemsController.endWeek);
 
 router.get("/endMonth", isAuth, itemsController.endMonth);

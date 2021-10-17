@@ -4,7 +4,7 @@ import { add, bignumber, number } from "mathjs";
 
 import { itemsListReducer } from "../utils";
 
-function MonthTable({ items }) {
+function WeekTable({ items }) {
   return (
     <Table variant="simple" size="md">
       <Thead>
@@ -15,11 +15,8 @@ function MonthTable({ items }) {
             fontSize="md"
             textAlign="center"
             borderLeftRadius="md"
-            width="16%"
+            width="30%"
           >
-            Date
-          </Th>
-          <Th bg="red.500" color="white" fontSize="md" textAlign="center">
             Event Name
           </Th>
           <Th bg="red.500" color="white" fontSize="md" textAlign="center">
@@ -43,27 +40,18 @@ function MonthTable({ items }) {
         </Tr>
       </Thead>
       <Tbody>
-        {items.map((dayItem) => (
-          <Tr key={dayItem.day + dayItem.eventName + dayItem.type}>
-            <Td>
-              {new Date(dayItem.day).toLocaleDateString("en-us", {
-                weekday: "short",
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })}
-            </Td>
-            <Td>{dayItem.eventName}</Td>
-            <Td>{dayItem.type}</Td>
-            <Td>{dayItem.noItems}</Td>
-            <Td>{itemsListReducer(dayItem.items)}</Td>
-            <Td>${dayItem.price}</Td>
+        {items.map((eventItem) => (
+          <Tr key={eventItem.eventName + eventItem.type}>
+            <Td>{eventItem.eventName}</Td>
+            <Td>{eventItem.type}</Td>
+            <Td>{eventItem.noItems}</Td>
+            <Td>{itemsListReducer(eventItem.items)}</Td>
+            <Td>${eventItem.price}</Td>
           </Tr>
         ))}
       </Tbody>
       <Tfoot>
         <Tr>
-          <Th></Th>
           <Th></Th>
           <Th></Th>
           <Th></Th>
@@ -83,4 +71,4 @@ function MonthTable({ items }) {
   );
 }
 
-export default MonthTable;
+export default WeekTable;

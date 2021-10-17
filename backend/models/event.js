@@ -1,3 +1,5 @@
+const Item = require("./item.js");
+
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
@@ -28,6 +30,7 @@ const eventSchema = new Schema(
         required: true,
       },
     ],
+    active: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
@@ -51,6 +54,36 @@ eventSchema.methods.updatePeriod = function (dayToSet) {
   }
   this.period.endDate = date;
   this.period.days.push(date);
+};
+
+eventSchema.methods.activate = async function () {
+  try {
+    this.active = true;
+    const eventItems = await Item.find({ event: this._id });
+    await Promise.all(
+      eventItems.map((item) => {
+        item.activate();
+        return item.save();
+      })
+    );
+  } catch (err) {
+    throw err;
+  }
+};
+
+eventSchema.methods.deactivate = async function () {
+  try {
+    this.active = false;
+    const eventItems = await Item.find({ event: this._id });
+    await Promise.all(
+      eventItems.map((item) => {
+        item.deactivate();
+        return item.save();
+      })
+    );
+  } catch (err) {
+    throw err;
+  }
 };
 
 module.exports = mongoose.model("Event", eventSchema);

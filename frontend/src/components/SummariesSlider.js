@@ -16,10 +16,12 @@ import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 
 import { useAuthState } from "../contexts";
 
-function SummeriesSlider() {
+function SummariesSlider({ editor }) {
   const currentUser = useAuthState();
   const now = new Date();
-  const startedAt = new Date(currentUser.userDetails.startedAt);
+  const startedAt = new Date(
+    editor ? editor.startedAt : currentUser.userDetails.startedAt
+  );
   const monthLimits = {
     lower: { month: startedAt.getMonth(), year: startedAt.getFullYear() },
     upper: { month: now.getMonth(), year: now.getFullYear() },
@@ -77,7 +79,7 @@ function SummeriesSlider() {
           }}
         >
           <Heading size="md" p="2">
-            Monthly Summery
+            {editor ? editor.name : "Monthly Summary"}
           </Heading>
         </Box>
         <Spacer
@@ -125,10 +127,15 @@ function SummeriesSlider() {
         </Box>
       </Flex>
       <Collapse in={isOpen} animateOpacity width="100%">
-        {isOpen && <MonthItems month={formatDate(displayedMonth)} />}
+        {isOpen && (
+          <MonthItems
+            month={formatDate(displayedMonth)}
+            editorId={editor ? editor.id : undefined}
+          />
+        )}
       </Collapse>
     </Flex>
   );
 }
 
-export default SummeriesSlider;
+export default SummariesSlider;

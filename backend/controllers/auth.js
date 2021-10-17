@@ -60,3 +60,22 @@ exports.getRole = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.getAllEditors = async (req, res, next) => {
+  try {
+    const allEditors = await User.find().sort("name");
+    res.status(200).json({
+      message: "Editors fetched Successfuly!",
+      editors: allEditors.map((editor) => ({
+        id: editor._id,
+        name: editor.name,
+        startedAt: editor.startedAt,
+      })),
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};

@@ -4,22 +4,22 @@ import { useAuthState } from "../contexts";
 
 import { Box, Heading, Spinner } from "@chakra-ui/react";
 
-import MonthTable from "./MonthTable.js";
-import MonthCards from "./MonthCards";
+import WeekTable from "./WeekTable.js";
+import WeekCards from "./WeekCards";
 
-function MonthItems({ month, editorId }) {
+function WeekItems({ week }) {
   const ROOT_URL = process.env.REACT_APP_API_HOST_URL;
 
-  const [monthItems, setMonthItems] = useState([]);
+  const [weekItems, setWeekItems] = useState([]);
 
   const [isLoading, setIsLoading] = useState(false);
 
   const currentUser = useAuthState();
 
   useEffect(() => {
-    async function fetchMonthItems(monthStr, userId) {
-      let url = new URL(`${ROOT_URL}/items/itemsByMonth`),
-        params = { month: monthStr, userId: userId };
+    async function fetchWeekItems(week) {
+      let url = new URL(`${ROOT_URL}/items/itemsByWeek`),
+        params = { week };
       Object.keys(params).forEach((key) =>
         url.searchParams.append(key, params[key])
       );
@@ -33,15 +33,15 @@ function MonthItems({ month, editorId }) {
           throw new Error("Failed to fetch items.");
         }
         let resData = await res.json();
-        setMonthItems(resData.items);
+        setWeekItems(resData.items);
         setIsLoading(false);
       } catch (err) {
         console.log(err);
       }
     }
     setIsLoading(true);
-    fetchMonthItems(month, editorId || currentUser.userDetails.id);
-  }, [ROOT_URL, month, editorId, currentUser]);
+    fetchWeekItems(week);
+  }, [ROOT_URL, week, currentUser]);
   return isLoading ? (
     <Spinner
       p="50"
@@ -54,18 +54,18 @@ function MonthItems({ month, editorId }) {
     />
   ) : (
     <>
-      {monthItems.length === 0 ? (
+      {weekItems.length === 0 ? (
         <Heading size="lg" py="5">
           Nothing to show yet!
         </Heading>
       ) : (
         <>
           <Box display={{ base: "none", lg: "inline-block" }} px={4}>
-            <MonthTable items={monthItems} />
+            <WeekTable items={weekItems} />
           </Box>
 
           <Box display={{ base: "inline-block", lg: "none" }}>
-            <MonthCards items={monthItems} />
+            <WeekCards items={weekItems} />
           </Box>
         </>
       )}
@@ -73,4 +73,4 @@ function MonthItems({ month, editorId }) {
   );
 }
 
-export default MonthItems;
+export default WeekItems;

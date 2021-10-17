@@ -48,6 +48,36 @@ const updateDaysArrayWithItem = (daysArr, item) => {
   }
 };
 
+const updateEventsArrayWithItem = (eventsArr, item) => {
+  let exists = false;
+  for (const eventItem of eventsArr) {
+    if (
+      eventItem.eventName === item.event.name &&
+      eventItem.type === item.type
+    ) {
+      exists = true;
+      eventItem.noItems += 1;
+      eventItem.items.push(item.value);
+      eventItem.price = mathjs.number(
+        mathjs.add(
+          mathjs.bignumber(eventItem.price),
+          mathjs.bignumber(item.price)
+        )
+      );
+      break;
+    }
+  }
+  if (!exists) {
+    eventsArr.push({
+      eventName: item.event.name,
+      type: item.type,
+      noItems: 1,
+      items: [item.value],
+      price: item.price,
+    });
+  }
+};
+
 const colorIsRed = (color) => {
   return color.red === 1 && !color.blue && !color.green;
 };
@@ -87,6 +117,35 @@ exports.getItemsByMonth = async (req, res, next) => {
   }
 };
 
+exports.getItemsByWeek = async (req, res, next) => {
+  const week = req.query.week;
+  try {
+    const items = await Item.find({
+      done: true,
+      "invoicesIndices.week": week,
+    })
+      .populate({
+        path: "event",
+        select: "name",
+      })
+      .sort({ "lifeCycle.doneAt": 1 });
+    let eventsItems = [];
+    if (items.length !== 0) {
+      for (const item of items) {
+        updateEventsArrayWithItem(eventsItems, item);
+      }
+    }
+
+    res.status(200).json({
+      message: "Items were fetched successfully!",
+      items: eventsItems,
+    });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
+
 exports.markItemsDone = async (req, res, next) => {
   const event = req.body.event;
   const type = req.body.type;
@@ -111,8 +170,14 @@ exports.markItemsDone = async (req, res, next) => {
         continue;
       }
 
+      const eventDoc = await Event.findById(event.id);
+
+      if (type === "Project" && eventDoc.period.endDate < new Date()) {
+        await eventDoc.activate();
+        await eventDoc.save();
+      }
+
       if (!item && type === "Project") {
-        const eventDoc = await Event.findById(event.id);
         await eventDoc.updatePeriod(itemValue.toLowerCase());
         await eventDoc.save();
         item = await Item.create({
@@ -213,6 +278,13 @@ exports.search = async (req, res, next) => {
     console.log(err);
     next(err);
   }
+};
+
+exports.getWeek = (req, res, next) => {
+  res.status(200).json({
+    message: "Week fetched succesfully",
+    week: invoicesIndices.getWeek(),
+  });
 };
 
 exports.endWeek = (req, res, next) => {
@@ -320,12 +392,9 @@ exports.sync = async (req, res, next) => {
 
     const dbEvents = await Promise.all(
       distinctEvents.map((eventName) => {
-        return Event.findOne(
-          {
-            name: eventName,
-          },
-          "name"
-        );
+        return Event.findOne({
+          name: eventName,
+        });
       })
     );
 
@@ -343,16 +412,19 @@ exports.sync = async (req, res, next) => {
       })
     );
 
-    const eventsToIds = distinctEvents.reduce((totalObj, eventName, index) => {
-      if (dbEvents[index]) {
-        return { ...totalObj, [eventName]: dbEvents[index]._id };
-      } else {
-        return {
-          ...totalObj,
-          [eventName]: newEvents[eventsToAdd.indexOf(eventName)]._id,
-        };
-      }
-    }, {});
+    const eventsNamesToObjs = distinctEvents.reduce(
+      (totalObj, eventName, index) => {
+        if (dbEvents[index]) {
+          return { ...totalObj, [eventName]: dbEvents[index] };
+        } else {
+          return {
+            ...totalObj,
+            [eventName]: newEvents[eventsToAdd.indexOf(eventName)],
+          };
+        }
+      },
+      {}
+    );
 
     const xcStr = "XC|INQUIRIES|TEAM|CHASE|HUNTER|TRIALS".toLowerCase();
     const sjStr = "SJ".toLowerCase();
@@ -361,7 +433,8 @@ exports.sync = async (req, res, next) => {
       const { timestamp, eventName, horseNo, type } = row;
 
       let video = {
-        event: eventsToIds[eventName],
+        eventName,
+        eventId: eventsNamesToObjs[eventName]._id,
         horseNo,
         lifeCycle: {
           createdAt: Date.parse(timestamp) ? new Date(timestamp) : new Date(),
@@ -388,7 +461,7 @@ exports.sync = async (req, res, next) => {
     const dbVideos = await Promise.all(
       cleanRows.map((row) =>
         Item.findOne({
-          event: row.event,
+          event: row.eventId,
           value: row.horseNo.value,
           type: row.type,
         })
@@ -401,8 +474,17 @@ exports.sync = async (req, res, next) => {
       cleanRows.flatMap((row, index) => {
         if (colorIsCyan(row.horseNo.bgColor) || !dbVideos[index]) {
           const item =
-            dbVideos[index] || new Item({ ...row, value: row.horseNo.value });
-          if (colorIsCyan(row.horseNo.bgColor)) {
+            dbVideos[index] ||
+            new Item({
+              event: row.eventId,
+              type: row.type,
+              value: row.horseNo.value,
+              lifeCycle: row.lifeCycle,
+            });
+          if (
+            colorIsCyan(row.horseNo.bgColor) ||
+            !eventsNamesToObjs[row.eventName].active
+          ) {
             numOfCyansInDB += dbVideos[index] ? 1 : 0;
             item.deactivate();
           }
