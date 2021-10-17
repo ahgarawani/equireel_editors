@@ -172,7 +172,7 @@ exports.markItemsDone = async (req, res, next) => {
 
       const eventDoc = await Event.findById(event.id);
 
-      if (type === "Project" && eventDoc.period.endDate < new Date()) {
+      if (type === "Project" && eventDoc.period.endDate < new Date() + 1) {
         await eventDoc.activate();
         await eventDoc.save();
       }
