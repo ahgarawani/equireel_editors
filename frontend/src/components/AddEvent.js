@@ -15,6 +15,21 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import { useAuthState } from "../contexts";
 
+const createUTCDate = (dateToParse) => {
+  const date = dateToParse ? new Date(dateToParse) : new Date();
+  return new Date(
+    Date.UTC(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      date.getHours(),
+      date.getMinutes(),
+      date.getSeconds(),
+      date.getMilliseconds()
+    )
+  );
+};
+
 function AddEvent() {
   const ROOT_URL = process.env.REACT_APP_API_HOST_URL;
   const [formValues, setFormValues] = useState({
@@ -44,7 +59,14 @@ function AddEvent() {
           "Content-Type": "application/json",
           Authorization: "Bearer " + currentUser.token,
         },
-        body: JSON.stringify({ ...formValues, period: { startDate, endDate } }),
+        body: JSON.stringify({
+          season: formValues.season,
+          name: formValues.name,
+          period: {
+            startDate: createUTCDate(startDate),
+            endDate: createUTCDate(endDate),
+          },
+        }),
       });
       const resData = await res.json();
       setIsLoading(false);
