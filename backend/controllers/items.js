@@ -426,8 +426,8 @@ exports.sync = async (req, res, next) => {
       {}
     );
 
-    const xcStr = "XC|INQUIRIES|TEAM|CHASE|HUNTER|TRIALS".toLowerCase();
-    const sjStr = "SJ".toLowerCase();
+    const xcStr = process.env.XC_STR.toLowerCase();
+    const sjStr = process.env.SJ_STR.toLowerCase();
 
     const cleanRows = admissbleRows.flatMap((row) => {
       const { timestamp, eventName, horseNo, type } = row;
