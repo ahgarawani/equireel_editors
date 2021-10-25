@@ -6,7 +6,7 @@
     "JWT_SECRET_KEY": "jwtsecretforequireeleditorsapi",
     "GOOGLE_APPLICATION_CREDENTIALS": "./configs/sheetsCredentials.json",
     "NUM_OF_ROWS_TO_SYNC": "250",
-    "XC_STR": "XC|INQUIRIES|TEAM|CHASE|HUNTER|TRIALS",
+    "XC_STR": "XC|INQUIRIES|TEAM|CHASE|HUNTER|TRIALS|STEEPLECHASE",
     "SJ_STR": "SJ"
   }
 }

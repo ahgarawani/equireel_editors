@@ -169,21 +169,26 @@ exports.markItemsDone = async (req, res, next) => {
         nonExistentItems.itemsValues.push(itemValue);
         continue;
       }
+      if (type === "Project") {
+        const eventDoc = await Event.findById(event.id);
+        console.log("found event successfully");
 
-      const eventDoc = await Event.findById(event.id);
+        if (!item) {
+          await eventDoc.updatePeriod(itemValue.toLowerCase());
+          await eventDoc.save();
+          item = await Item.create({
+            ...submittedItem,
+            lifeCycle: { createdAt: new Date() },
+          });
+        }
+        let today = new Date();
 
-      if (type === "Project" && eventDoc.period.endDate < new Date() + 1) {
-        await eventDoc.activate();
-        await eventDoc.save();
-      }
-
-      if (!item && type === "Project") {
-        await eventDoc.updatePeriod(itemValue.toLowerCase());
-        await eventDoc.save();
-        item = await Item.create({
-          ...submittedItem,
-          lifeCycle: { createdAt: new Date() },
-        });
+        if (
+          eventDoc.period.endDate < new Date(today.setDate(today.getDate() + 1))
+        ) {
+          await eventDoc.activate();
+          await eventDoc.save();
+        }
       }
 
       if (item.done) {
