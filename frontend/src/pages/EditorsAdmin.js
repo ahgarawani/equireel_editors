@@ -52,6 +52,7 @@ export default function EditorsAdmin() {
         <>
           {editors.map((editor) => (
             <Flex
+              key={editor.id}
               width="90%"
               mb={{ base: 5, md: 10 }}
               borderColor="gray.200"

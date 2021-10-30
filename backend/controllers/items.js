@@ -250,16 +250,18 @@ exports.search = async (req, res, next) => {
   }
 
   try {
-    const results = await Item.find(findFilter).populate([
-      {
-        path: "event",
-        select: "name",
-      },
-      {
-        path: "editor",
-        select: "name",
-      },
-    ]);
+    const results = await Item.find(findFilter)
+      .populate([
+        {
+          path: "event",
+          select: "name",
+        },
+        {
+          path: "editor",
+          select: "name",
+        },
+      ])
+      .sort({ done: 1, "lifeCycle.addedAt": 1 });
 
     if (!results) {
       res.status(404).json({ message: "failed to search" });
@@ -330,7 +332,7 @@ exports.sync = async (req, res, next) => {
     const spreadsheetId = "1dlDPWynX7nxRJTS2nZ0GliGlIDXhYKILCEukt8C2NAE";
 
     //Create proper indices json
-    const [headerRow, aColumn] = await Promise.all([
+    const [headerRow, bColumn] = await Promise.all([
       googleSheets.spreadsheets.values.get({
         auth,
         spreadsheetId,
@@ -339,7 +341,7 @@ exports.sync = async (req, res, next) => {
       googleSheets.spreadsheets.values.get({
         auth,
         spreadsheetId,
-        range: "Orders!A:A",
+        range: "Orders!B:B",
       }),
     ]);
 
@@ -352,7 +354,7 @@ exports.sync = async (req, res, next) => {
       type: headerRowValues.indexOf("Type"),
     };
 
-    const numOfRows = aColumn.data.values.length;
+    const numOfRows = bColumn.data.values.length;
 
     const range = `Orders!A${
       numOfRows - Number(process.env.NUM_OF_ROWS_TO_SYNC)
@@ -446,21 +448,32 @@ exports.sync = async (req, res, next) => {
         },
       };
       //Create types array
-      return type.value
-        .split(" & ")
-        .filter((word) => {
-          if (
-            new RegExp(sjStr).test(word.toLowerCase()) &&
-            colorIsRed(type.bgColor)
-          )
-            return false;
-          return new RegExp(xcStr + "|" + sjStr).test(word.toLowerCase());
-        })
-        .map((word) =>
-          new RegExp(xcStr).test(word.toLowerCase())
-            ? { ...video, type: "XC" }
-            : { ...video, type: "SJ" }
-        );
+      let finalVideos = [];
+      if (new RegExp(xcStr).test(type.value.toLowerCase())) {
+        finalVideos.push({ ...video, type: "XC" });
+      }
+      if (
+        new RegExp(sjStr).test(type.value.toLowerCase()) &&
+        !colorIsRed(type.bgColor)
+      ) {
+        finalVideos.push({ ...video, type: "SJ" });
+      }
+      return finalVideos;
+      // return type.value
+      //   .split(" & ")
+      //   .filter((word) => {
+      //     if (
+      //       new RegExp(sjStr).test(word.toLowerCase()) &&
+      //       colorIsRed(type.bgColor)
+      //     )
+      //       return false;
+      //     return new RegExp(xcStr + "|" + sjStr).test(word.toLowerCase());
+      //   })
+      //   .map((word) =>
+      //     new RegExp(xcStr).test(word.toLowerCase())
+      //       ? { ...video, type: "XC" }
+      //       : { ...video, type: "SJ" }
+      //   );
     });
 
     const dbVideos = await Promise.all(

@@ -7,6 +7,7 @@ import Login from "../pages/Login";
 import PageNotFound from "../pages/PageNotFound";
 import EditorsAdmin from "../pages/EditorsAdmin";
 import InvoicesAdmin from "../pages/InvoicesAdmin";
+import RulesAdmin from "../pages/RulesAdmin";
 
 const routes = [
   {
@@ -51,9 +52,15 @@ const routes = [
         isExact: false,
         role: "admin",
       },
+      // {
+      //   path: "/admin/orders",
+      //   component: AddEvent,
+      //   isExact: false,
+      //   role: "admin",
+      // },
       {
-        path: "/admin/orders",
-        component: AddEvent,
+        path: "/admin/rules",
+        component: RulesAdmin,
         isExact: false,
         role: "admin",
       },

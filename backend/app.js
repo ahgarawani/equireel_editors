@@ -7,6 +7,7 @@ const compression = require("compression");
 const authRoutes = require("./routes/auth");
 const eventsRoutes = require("./routes/events");
 const itemsRoutes = require("./routes/items");
+const rulesRoutes = require("./routes/rules");
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
 app.use("/auth", authRoutes);
 app.use("/events", eventsRoutes);
 app.use("/items", itemsRoutes);
+app.use("/rules", rulesRoutes);
 
 app.use((error, req, res, next) => {
   console.log(error);

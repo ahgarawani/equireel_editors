@@ -6,11 +6,13 @@ import {
   RiCalendarEventLine,
   RiUserLine,
   RiVidiconLine,
+  RiRulerLine,
   RiHome5Fill,
   RiBillFill,
   RiCalendarEventFill,
   RiUserFill,
   RiVidiconFill,
+  RiRulerFill,
 } from "react-icons/ri";
 
 export default function AdminNavs({ variant, closeNavDrawer }) {
@@ -107,7 +109,7 @@ export default function AdminNavs({ variant, closeNavDrawer }) {
       >
         Editors
       </Button>
-      <Button
+      {/* <Button
         leftIcon={
           activeRoute === "/admin/orders" ? (
             <RiVidiconFill />
@@ -129,6 +131,25 @@ export default function AdminNavs({ variant, closeNavDrawer }) {
         isActive={activeRoute === "/admin/orders"}
       >
         Orders
+      </Button> */}
+      <Button
+        leftIcon={
+          activeRoute === "/admin/rules" ? <RiRulerFill /> : <RiRulerLine />
+        }
+        onClick={() => {
+          history.push(`/admin/rules`);
+          if (closeNavDrawer) closeNavDrawer();
+        }}
+        colorScheme="red"
+        variant={variant}
+        size="lg"
+        borderRadius="full"
+        justifyContent="flex-start"
+        _hover={hoverStyle[variant]}
+        _active={activeStyle[variant]}
+        isActive={activeRoute === "/admin/rules"}
+      >
+        Rules
       </Button>
     </VStack>
   );
