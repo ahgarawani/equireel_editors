@@ -29,6 +29,29 @@ const getSeasons = async (req, res, next) => {
   }
 };
 
+const getAllEvents = async (req, res, next) => {
+  try {
+    const events = await Event.find()
+      .select("-appliedRules -period.days")
+      .sort({ season: 1, name: 1 });
+    res.status(200).json({
+      message: "Events fetched Successfuly!",
+      events: events.map((event) => ({
+        id: event._id,
+        season: event.season,
+        name: event.name,
+        active: event.active,
+        ...event.period,
+      })),
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 const getEventsBySeason = async (req, res, next) => {
   const season = req.query.season;
   try {
@@ -129,4 +152,10 @@ const addEvent = async (req, res, next) => {
   }
 };
 
-module.exports = { addEventService, getSeasons, getEventsBySeason, addEvent };
+module.exports = {
+  addEventService,
+  getSeasons,
+  getAllEvents,
+  getEventsBySeason,
+  addEvent,
+};

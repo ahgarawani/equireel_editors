@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Accordion,
   AccordionItem,
@@ -11,13 +12,59 @@ import {
   UnorderedList,
   ListItem,
   IconButton,
+  useToast,
 } from "@chakra-ui/react";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { itemsListReducer } from "../utils";
+import { useAuthState } from "../contexts";
 
 export default function RuleItem({
   rule: { id, title, events, itemType, itemPrice, timeRange },
 }) {
+  const ROOT_URL = process.env.REACT_APP_API_HOST_URL;
+  const [displayedEvents, setDisplayedEvents] = useState(events);
+  const currentUser = useAuthState();
+  const toast = useToast();
+
+  const handleEventDelete = async (rule, event) => {
+    try {
+      const res = await fetch(`${ROOT_URL}/rules/removeEvent`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + currentUser.token,
+        },
+        body: JSON.stringify({
+          rule,
+          event,
+        }),
+      });
+      const resData = await res.json();
+      if (res.status === 201) {
+        toast({
+          title: "Removing an Event from a Rule",
+          description: resData.message,
+          status: "success",
+          duration: 6000,
+          isClosable: true,
+        });
+        setDisplayedEvents(
+          displayedEvents.filter((arrEvent) => arrEvent.id !== event)
+        );
+      } else {
+        toast({
+          title: "Removing an Event from a Rule",
+          description: resData.message,
+          status: "error",
+          duration: 10000,
+          isClosable: true,
+        });
+        return;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <AccordionItem>
       <AccordionButton>
@@ -68,9 +115,10 @@ export default function RuleItem({
                 </AccordionButton>
                 <AccordionPanel>
                   <UnorderedList>
-                    {events
-                      .sort((a, b) =>
-                        a.name > b.name ? 1 : b.name > a.name ? -1 : 0
+                    {displayedEvents
+                      .sort(
+                        (a, b) =>
+                          b.name.localeCompare(a.name) && a.season - b.season
                       )
                       .map((event) => (
                         <Flex
@@ -89,6 +137,10 @@ export default function RuleItem({
                             size="md"
                             borderRadius="xl"
                             icon={<RiDeleteBin5Fill />}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleEventDelete(id, event.id);
+                            }}
                           />
                         </Flex>
                       ))}

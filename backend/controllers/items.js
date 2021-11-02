@@ -294,6 +294,13 @@ exports.getWeek = (req, res, next) => {
   });
 };
 
+exports.getMonth = (req, res, next) => {
+  res.status(200).json({
+    message: "Month fetched succesfully",
+    month: invoicesIndices.getMonth(),
+  });
+};
+
 exports.endWeek = (req, res, next) => {
   invoicesIndices.setWeek(invoicesIndices.getWeek() + 1);
   res.status(200).json({

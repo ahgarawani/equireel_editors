@@ -1,5 +1,7 @@
 import { Flex, Button } from "@chakra-ui/react";
 import { RiAddFill } from "react-icons/ri";
+import AddRuleForm from "../components/AddRuleForm";
+import ModalWithOpener from "../components/ModalWithOpener";
 import RulesItems from "../components/RulesItems";
 
 export default function RulesAdmin() {
@@ -19,16 +21,25 @@ export default function RulesAdmin() {
         bg="white"
       >
         <RulesItems />
-        <Button
-          colorScheme="red"
-          rightIcon={<RiAddFill />}
-          mt={8}
-          variant="ghost"
-          size="lg"
-          borderRadius="xl"
+        <ModalWithOpener
+          modalOpener={
+            <Button
+              colorScheme="red"
+              rightIcon={<RiAddFill />}
+              mt={8}
+              variant="ghost"
+              size="lg"
+              borderRadius="xl"
+            >
+              Add New Rule
+            </Button>
+          }
+          modalHeader="Add A New Rule!"
+          size="3xl"
+          scrollBehavior="inside"
         >
-          Add New Rule
-        </Button>
+          <AddRuleForm />
+        </ModalWithOpener>
       </Flex>
     </Flex>
   );

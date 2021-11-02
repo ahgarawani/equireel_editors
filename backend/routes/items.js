@@ -16,6 +16,8 @@ router.get("/itemsByWeek", isAuth, itemsController.getItemsByWeek);
 
 router.get("/week", isAuth, itemsController.getWeek);
 
+router.get("/month", isAuth, itemsController.getMonth);
+
 router.get("/endWeek", isAuth, itemsController.endWeek);
 
 router.get("/endMonth", isAuth, itemsController.endMonth);
