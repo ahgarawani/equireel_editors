@@ -71,9 +71,9 @@ itemSchema.methods.updateItemPrice = async function () {
 
 itemSchema.methods.calculateElapsedMinutes = function () {
   this.activate();
-  return (
+  return Math.abs(
     Math.floor((this.lifeCycle.doneAt - this.lifeCycle.addedAt) / 60000) -
-    this.inactivenessLog.totalInactivenessDuration
+      this.inactivenessLog.totalInactivenessDuration
   );
 };
 

@@ -32,6 +32,8 @@ exports.getAllRules = async (req, res, next) => {
 
 exports.addRule = async (req, res, next) => {
   const rule = req.body;
+  if (rule.description.timeRange[1] === null)
+    rule.description.timeRange[1] = Number.POSITIVE_INFINITY;
   try {
     const newRule = await Rule.create(rule);
     await Promise.all(
