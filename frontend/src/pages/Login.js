@@ -73,6 +73,9 @@ function Login() {
             <></>
           )}
           <Heading color="red.500">Login</Heading>
+          <Heading>
+            To test the website login using the email guest@demo.com
+          </Heading>
           <Input
             placeholder="Email"
             focusBorderColor="red.500"
