@@ -26,7 +26,7 @@ function WeeksSlider() {
   useEffect(() => {
     async function fetchWeek() {
       try {
-        let res = await fetch(`${ROOT_URL}/items/week`, {
+        let res = await fetch(`${ROOT_URL}/configs/week`, {
           headers: {
             Authorization: "Bearer " + currentUser.token,
           },

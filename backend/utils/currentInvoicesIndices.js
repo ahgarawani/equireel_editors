@@ -1,20 +1,9 @@
-const fs = require("fs");
-const path = require("path");
+const Config = require("../models/config");
 
-const pathToIndices = path.join(
-  path.dirname(require.main.filename),
-  "utils",
-  "currentInvoicesIndices.json"
-);
-
-const loadIndices = () => {
-  return JSON.parse(fs.readFileSync(pathToIndices, { encoding: "utf8" }));
-};
-
-const save = (indices) => {
-  fs.writeFileSync(pathToIndices, JSON.stringify(indices), {
-    encoding: "utf8",
-  });
+const loadIndices = async () => {
+  const indices = await Config.findOne();
+  console.log(indices);
+  return indices;
 };
 
 exports.getWeek = () => {
@@ -42,7 +31,7 @@ exports.setWeek = (newWeek) => {
    */
   const indices = loadIndices();
   indices.week = newWeek;
-  save(indices);
+  indices.save();
 };
 
 exports.setMonth = (newMonth) => {
@@ -52,5 +41,5 @@ exports.setMonth = (newMonth) => {
    */
   const indices = loadIndices();
   indices.month = newMonth;
-  save(indices);
+  indices.save();
 };

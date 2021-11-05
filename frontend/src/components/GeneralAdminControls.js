@@ -51,7 +51,7 @@ function GeneralAdminControls() {
   const handleEndWeek = async () => {
     setIsEndingWeek(true);
     try {
-      const res = await fetch(`${ROOT_URL}/items/endWeek`, {
+      const res = await fetch(`${ROOT_URL}/configs/endWeek`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + currentUser.token,
@@ -84,7 +84,7 @@ function GeneralAdminControls() {
   const handleEndMonth = async () => {
     setIsEndingMonth(true);
     try {
-      const res = await fetch(`${ROOT_URL}/items/endMonth`, {
+      const res = await fetch(`${ROOT_URL}/configs/endMonth`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + currentUser.token,

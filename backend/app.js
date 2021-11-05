@@ -8,6 +8,7 @@ const authRoutes = require("./routes/auth");
 const eventsRoutes = require("./routes/events");
 const itemsRoutes = require("./routes/items");
 const rulesRoutes = require("./routes/rules");
+const configsRoutes = require("./routes/configs");
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use("/auth", authRoutes);
 app.use("/events", eventsRoutes);
 app.use("/items", itemsRoutes);
 app.use("/rules", rulesRoutes);
+app.use("/configs", configsRoutes);
 
 app.use((error, req, res, next) => {
   console.log(error);

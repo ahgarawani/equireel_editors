@@ -55,7 +55,7 @@ function Login() {
         <VStack
           width="100%"
           maxW={{ base: "90vw", sm: "80vw", md: "60vw", lg: "40vw" }}
-          height="50%"
+          py={10}
           borderColor="gray.300"
           borderWidth="1px"
           borderRadius="lg"
@@ -73,17 +73,20 @@ function Login() {
             <></>
           )}
           <Heading color="red.500">Login</Heading>
-          <Heading>
-            To test the website login using the email guest@demo.com
-          </Heading>
-          <Input
-            placeholder="Email"
-            focusBorderColor="red.500"
-            width="60%"
-            isRequired
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <VStack spacing="5" width="100%">
+            <Input
+              placeholder="Email"
+              focusBorderColor="red.500"
+              width="60%"
+              isRequired
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <Heading size="sm" w="85%" textAlign="center">
+              To test the website: login using this email: guest@demo.com
+            </Heading>
+          </VStack>
+
           <Button
             colorScheme="red"
             onClick={handleLogin}

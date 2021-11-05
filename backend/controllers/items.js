@@ -1,6 +1,5 @@
 const mathjs = require("mathjs");
 const { google } = require("googleapis");
-const invoicesIndices = require("../utils/currentInvoicesIndices");
 
 const Item = require("../models/item");
 const Event = require("../models/event");
@@ -285,45 +284,6 @@ exports.search = async (req, res, next) => {
     console.log(err);
     next(err);
   }
-};
-
-exports.getWeek = (req, res, next) => {
-  res.status(200).json({
-    message: "Week fetched succesfully",
-    week: invoicesIndices.getWeek(),
-  });
-};
-
-exports.getMonth = (req, res, next) => {
-  res.status(200).json({
-    message: "Month fetched succesfully",
-    month: invoicesIndices.getMonth(),
-  });
-};
-
-exports.endWeek = (req, res, next) => {
-  invoicesIndices.setWeek(invoicesIndices.getWeek() + 1);
-  res.status(200).json({
-    message: "Week ended succesfully",
-    newWeek: invoicesIndices.getWeek(),
-  });
-};
-
-exports.endMonth = (req, res, next) => {
-  const pastMonthDate = new Date(invoicesIndices.getMonth());
-  const [month, year] = [pastMonthDate.getMonth(), pastMonthDate.getFullYear()];
-  const currentMonthDate = new Date(
-    year + Math.floor((month + 1) / 12),
-    (month + 1) % 12,
-    1
-  );
-  invoicesIndices.setMonth(
-    currentMonthDate.toLocaleString("en-us", { month: "long", year: "numeric" })
-  );
-  res.status(200).json({
-    message: "Month ended succesfully",
-    newMonth: invoicesIndices.getMonth(),
-  });
 };
 
 exports.sync = async (req, res, next) => {

@@ -1,4 +1,4 @@
-const invoicesIndices = require("../utils/currentInvoicesIndices");
+const Config = require("./config");
 
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
@@ -46,10 +46,8 @@ const itemSchema = new Schema(
 );
 
 itemSchema.methods.updateItemPrice = async function () {
-  if (
-    this.invoicesIndices.week === invoicesIndices.getWeek() ||
-    this.price === -1
-  ) {
+  const invoicesIndices = await Config.findOne();
+  if (this.invoicesIndices.week === invoicesIndices.week || this.price === -1) {
     const elapsedMinutes = this.calculateElapsedMinutes();
 
     await this.populate({
@@ -98,8 +96,9 @@ itemSchema.methods.markAsDone = async function (editor) {
   this.lifeCycle.doneAt = new Date();
   this.done = true;
   this.editor = editor;
-  this.invoicesIndices.week = invoicesIndices.getWeek();
-  this.invoicesIndices.month = invoicesIndices.getMonth();
+  const invoicesIndices = await Config.findOne();
+  this.invoicesIndices.week = invoicesIndices.week;
+  this.invoicesIndices.month = invoicesIndices.month;
   await this.updateItemPrice();
 };
 
