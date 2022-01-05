@@ -1,4 +1,4 @@
 #Config
 configs/
 assets/
-/nodemon.json
+nodemon.json
