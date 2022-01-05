@@ -350,7 +350,8 @@ exports.sync = async (req, res, next) => {
           !eventName ||
           colorIsRed(horseNo.bgColor) ||
           new RegExp("#N/A|#REF!").test(horseNo.value) ||
-          !horseNo.value
+          !horseNo.value ||
+          isNaN(eventName.slice(-4))
         ) {
           return [];
         }
