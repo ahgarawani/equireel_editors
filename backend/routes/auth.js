@@ -7,6 +7,7 @@ const isAuth = require("../middleware/is-auth");
 const router = express.Router();
 
 router.post("/login", authController.login);
+router.post("/validJWT", authController.validJWT);
 router.get("/allEditors", isAuth, authController.getAllEditors);
 router.get("/role", isAuth, authController.getRole);
 

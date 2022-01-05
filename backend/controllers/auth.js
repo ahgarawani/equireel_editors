@@ -41,6 +41,27 @@ exports.login = (req, res, next) => {
     });
 };
 
+exports.validJWT = (req, res, next) => {
+  const token = req.body.token;
+  let decodedToken;
+  try {
+    decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
+  } catch (err) {
+    err.statusCode = 500;
+    throw err;
+  }
+  if (!decodedToken) {
+    res.status(401).json({
+      valid: false,
+    });
+  } else {
+    res.status(200).json({
+      valid: true,
+    });
+  }
+  next();
+};
+
 exports.getRole = async (req, res, next) => {
   const userId = req.userId;
   try {
