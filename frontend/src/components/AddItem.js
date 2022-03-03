@@ -15,7 +15,7 @@ import {
 
 import WorngItemsAlertModal from "./WorngItemsAlertModal";
 
-import { useAuthState } from "../contexts";
+import { logout, useAuthState, useAuthDispatch } from "../contexts";
 
 import { itemsListReducer } from "../utils";
 
@@ -45,6 +45,7 @@ function AddItem() {
   const [isLoading, setIsLoading] = useState(false);
 
   const currentUser = useAuthState();
+  const dispatch = useAuthDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
@@ -57,6 +58,9 @@ function AddItem() {
           },
         });
         if (res.status !== 200) {
+          if (res.status === 401) {
+            logout(dispatch);
+          }
           throw new Error("Failed to fetch seasons.");
         }
         let resData = await res.json();

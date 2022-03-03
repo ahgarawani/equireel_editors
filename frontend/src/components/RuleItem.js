@@ -21,6 +21,7 @@ import { useAuthState } from "../contexts";
 export default function RuleItem({
   rule: { id, title, events, itemType, itemPrice, timeRange },
 }) {
+  console.log(timeRange[1]);
   const ROOT_URL = process.env.REACT_APP_API_HOST_URL;
   const [displayedEvents, setDisplayedEvents] = useState(events);
   const currentUser = useAuthState();
@@ -97,7 +98,7 @@ export default function RuleItem({
               Time Range
             </Text>
             <Text fontSize="md">
-              {!isFinite(timeRange[1])
+              {timeRange[1] !== null
                 ? `${Math.floor((timeRange[1] - timeRange[0]) / 60)} Hours.`
                 : "Indefinite."}
             </Text>

@@ -13,7 +13,7 @@ import {
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import { useAuthState } from "../contexts";
+import { logout, useAuthState, useAuthDispatch } from "../contexts";
 
 const createUTCDate = (dateToParse) => {
   const date = dateToParse ? new Date(dateToParse) : new Date();
@@ -46,6 +46,7 @@ function AddEvent() {
   const [isLoading, setIsLoading] = useState(false);
 
   const currentUser = useAuthState();
+  const dispatch = useAuthDispatch();
 
   const toast = useToast();
 
@@ -70,6 +71,9 @@ function AddEvent() {
       });
       const resData = await res.json();
       setIsLoading(false);
+      if (res.status === 401) {
+        logout(dispatch);
+      }
       if (res.status === 201) {
         clearForm();
         toast({
