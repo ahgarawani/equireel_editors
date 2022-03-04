@@ -60,6 +60,7 @@ itemSchema.methods.updateItemPrice = async function () {
           "description.timeRange.0": { $lte: elapsedMinutes },
           "description.timeRange.1": { $gte: elapsedMinutes },
         },
+        options: { sort: { "description.itemPrice": -1 } },
       },
     });
 
