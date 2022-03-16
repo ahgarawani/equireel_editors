@@ -274,6 +274,7 @@ exports.search = async (req, res, next) => {
         type: result.type,
         itemValue: result.value,
         done: result.done,
+        price: result.price,
         editor: result.editor ? result.editor.name : "",
       })),
     });

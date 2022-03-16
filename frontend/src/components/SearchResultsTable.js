@@ -54,14 +54,19 @@ function SearchResultsTable({ searchResults }) {
             Status
           </Th>
           {areSomeDone && (
-            <Th
-              borderRightRadius="lg"
-              color="white"
-              fontSize="md"
-              textAlign="center"
-            >
-              Editor
-            </Th>
+            <>
+              <Th color="white" fontSize="md" textAlign="center">
+                Editor
+              </Th>
+              <Th
+                borderRightRadius="lg"
+                color="white"
+                fontSize="md"
+                textAlign="center"
+              >
+                Price
+              </Th>
+            </>
           )}
         </Tr>
       </Thead>
@@ -75,16 +80,19 @@ function SearchResultsTable({ searchResults }) {
               {result.done ? "Done" : "Not Done"}
             </Td>
             {areSomeDone && (
-              <Td
-                fontWeight="bold"
-                color={
-                  result.editor === currentUser.userDetails.name
-                    ? "green"
-                    : "gray.700"
-                }
-              >
-                {result.editor}
-              </Td>
+              <>
+                <Td
+                  fontWeight="bold"
+                  color={
+                    result.editor === currentUser.userDetails.name
+                      ? "green"
+                      : "gray.700"
+                  }
+                >
+                  {result.editor}
+                </Td>
+                <Td>{result.price > -1 ? `$${result.price}` : ""}</Td>
+              </>
             )}
           </Tr>
         ))}
