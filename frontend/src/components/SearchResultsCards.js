@@ -2,6 +2,8 @@ import { Flex, Divider, SimpleGrid, Text } from "@chakra-ui/react";
 
 import { useAuthState } from "../contexts";
 
+import ItemPriceGroup from "./ItemPriceGroup";
+
 function MonthCards({ searchResults }) {
   const currentUser = useAuthState();
   return (
@@ -58,6 +60,18 @@ function MonthCards({ searchResults }) {
             >
               {result.editor}
             </Text>
+            {result.price > -1 && (
+              <>
+                <Text fontSize="sm" fontWeight="bold">
+                  Price
+                </Text>
+                <ItemPriceGroup
+                  itemId={result.id}
+                  itemPrice={result.price}
+                  itemType={result.type}
+                />
+              </>
+            )}
           </SimpleGrid>
           <Divider width="100%" borderWidth="1px" borderColor="gray.300" />
         </Flex>

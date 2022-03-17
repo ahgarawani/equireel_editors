@@ -80,12 +80,12 @@ function ItemPriceGroup({ itemId, itemPrice, itemType }) {
       />
     </Flex>
   ) : (
-    <HStack spacing={5}>
+    <HStack spacing={5} w={{ base: "100%", md: "35%", lg: "100%" }}>
       {editing ? (
         <>
           <Select
             size="sm"
-            colorScheme="red"
+            focusBorderColor="red.500"
             placeholder={`$${price.toFixed(2)}`}
             onChange={(e) => {
               e.persist();
