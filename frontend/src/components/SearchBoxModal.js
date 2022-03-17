@@ -67,7 +67,7 @@ function SearchBoxModal({ modalControls: { isOpen, onClose } }) {
     <Modal
       isOpen={isOpen}
       onClose={closeModal}
-      size="5xl"
+      size="6xl"
       scrollBehavior="inside"
     >
       <ModalOverlay />
@@ -111,7 +111,7 @@ function SearchBoxModal({ modalControls: { isOpen, onClose } }) {
                   ) : (
                     <>
                       <Box
-                        width="95%"
+                        width="100%"
                         p={4}
                         display={{ base: "none", lg: "inline-block" }}
                       >

@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 
 import { useAuthState } from "../contexts";
+import ItemPriceGroup from "./ItemPriceGroup";
 
 function SearchResultsTable({ searchResults }) {
   const [areSomeDone, setAreSomeDone] = useState(false);
@@ -28,7 +29,7 @@ function SearchResultsTable({ searchResults }) {
   }, [searchResults]);
 
   return (
-    <Table variant="simple" size="md">
+    <Table variant="simple" size="md" width="100%">
       <Thead>
         <Tr bg="red.500">
           <Th
@@ -39,10 +40,10 @@ function SearchResultsTable({ searchResults }) {
           >
             Event Name
           </Th>
-          <Th color="white" fontSize="md" textAlign="center">
+          <Th color="white" fontSize="md" textAlign="center" width="10%">
             Type
           </Th>
-          <Th color="white" fontSize="md" textAlign="center">
+          <Th color="white" fontSize="md" textAlign="center" width="10%">
             Item
           </Th>
           <Th
@@ -50,12 +51,13 @@ function SearchResultsTable({ searchResults }) {
             color="white"
             fontSize="md"
             textAlign="center"
+            width="13%"
           >
             Status
           </Th>
           {areSomeDone && (
             <>
-              <Th color="white" fontSize="md" textAlign="center">
+              <Th color="white" fontSize="md" textAlign="center" width="10%">
                 Editor
               </Th>
               <Th
@@ -63,6 +65,7 @@ function SearchResultsTable({ searchResults }) {
                 color="white"
                 fontSize="md"
                 textAlign="center"
+                width="21%"
               >
                 Price
               </Th>
@@ -74,8 +77,8 @@ function SearchResultsTable({ searchResults }) {
         {searchResults.map((result) => (
           <Tr key={result.id}>
             <Td>{result.eventName}</Td>
-            <Td>{result.type}</Td>
-            <Td>{result.itemValue}</Td>
+            <Td textAlign="center">{result.type}</Td>
+            <Td textAlign="center">{result.itemValue}</Td>
             <Td fontWeight="bold" color={result.done ? "green" : "red.500"}>
               {result.done ? "Done" : "Not Done"}
             </Td>
@@ -91,7 +94,15 @@ function SearchResultsTable({ searchResults }) {
                 >
                   {result.editor}
                 </Td>
-                <Td>{result.price > -1 ? `$${result.price}` : ""}</Td>
+                <Td>
+                  {result.price > -1 && (
+                    <ItemPriceGroup
+                      itemId={result.id}
+                      itemPrice={result.price}
+                      itemType={result.type}
+                    />
+                  )}
+                </Td>
               </>
             )}
           </Tr>

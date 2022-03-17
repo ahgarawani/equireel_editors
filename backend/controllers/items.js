@@ -230,6 +230,28 @@ exports.markItemsDone = async (req, res, next) => {
   }
 };
 
+exports.updatePrice = async (req, res, next) => {
+  const itemId = req.body.itemId;
+  const newPrice = req.body.newPrice;
+
+  try {
+    let item = await Item.findByIdAndUpdate(
+      itemId,
+      { price: newPrice },
+      { new: true }
+    );
+    res.status(200).json({
+      message: "Item price have been updated successfully",
+      itemPrice: item.price,
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 exports.search = async (req, res, next) => {
   const { eventStr, type, itemsStr } = req.query;
   const event = JSON.parse(eventStr);

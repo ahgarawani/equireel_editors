@@ -16,4 +16,6 @@ router.get("/itemsByWeek", isAuth, itemsController.getItemsByWeek);
 
 router.patch("/markItemsDone", isAuth, itemsController.markItemsDone);
 
+router.patch("/updatePrice", isAuth, itemsController.updatePrice);
+
 module.exports = router;
