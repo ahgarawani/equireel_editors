@@ -92,8 +92,12 @@ function ItemPriceGroup({ itemId, itemPrice, itemType }) {
               setPrice(parseFloat(e.target.value));
             }}
           >
+            {price !== 3.0 && <option value={3.0}>$3.00</option>}
+            {price !== 2.3 && <option value={2.3}>$2.30</option>}
             {price !== 2.0 && <option value={2.0}>$2.00</option>}
+            {price !== 1.65 && <option value={1.65}>$1.65</option>}
             {price !== 1.5 && <option value={1.5}>$1.50</option>}
+            {price !== 2.0 && <option value={2.0}>$2.00</option>}
             {price !== 1.15 && <option value={1.15}>$1.15</option>}
             {price !== 0.75 && <option value={0.75}>$0.75</option>}
             {price !== 0.65 && <option value={0.65}>$0.65</option>}
