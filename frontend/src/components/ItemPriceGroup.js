@@ -99,7 +99,9 @@ function ItemPriceGroup({ itemId, itemPrice, itemType }) {
             {price !== 1.65 && <option value={1.65}>$1.65</option>}
             {price !== 1.5 && <option value={1.5}>$1.50</option>}
             {price !== 2.0 && <option value={2.0}>$2.00</option>}
+            {price !== 1.25 && <option value={1.25}>$1.25</option>}
             {price !== 1.15 && <option value={1.15}>$1.15</option>}
+            {price !== 1.0 && <option value={1.0}>$1.00</option>}
             {price !== 0.75 && <option value={0.75}>$0.75</option>}
             {price !== 0.65 && <option value={0.65}>$0.65</option>}
             {price !== 0.5 && <option value={0.5}>$0.50</option>}
