@@ -134,7 +134,7 @@ exports.getItemsByWeek = async (req, res, next) => {
         if (item.event) updateEventsArrayWithItem(eventsItems, item);
       }
     }
-
+    //
     res.status(200).json({
       message: "Items were fetched successfully!",
       items: eventsItems,
