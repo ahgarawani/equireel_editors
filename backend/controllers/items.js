@@ -102,7 +102,7 @@ exports.getItemsByMonth = async (req, res, next) => {
     let daysItems = [];
     if (items.length !== 0) {
       for (const item of items) {
-        updateDaysArrayWithItem(daysItems, item);
+        if (item.event) updateDaysArrayWithItem(daysItems, item);
       }
     }
 
@@ -131,7 +131,7 @@ exports.getItemsByWeek = async (req, res, next) => {
     let eventsItems = [];
     if (items.length !== 0) {
       for (const item of items) {
-        updateEventsArrayWithItem(eventsItems, item);
+        if (item.event) updateEventsArrayWithItem(eventsItems, item);
       }
     }
 
