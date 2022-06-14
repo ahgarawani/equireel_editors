@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
   IconButton,
@@ -14,8 +14,10 @@ import { FaEdit, FaCheck } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 
 import { useAuthState } from "../contexts";
-function ItemPriceGroup({ itemId, itemPrice, itemType }) {
+function ItemPriceGroup({ itemId, itemPrice, itemType, itemWeek }) {
   const ROOT_URL = process.env.REACT_APP_API_HOST_URL;
+
+  const [currentWeek, setCurrentWeek] = useState(0);
 
   const [price, setPrice] = useState(itemPrice);
   const [finalPrice, setFinalPrice] = useState(itemPrice);
@@ -25,6 +27,26 @@ function ItemPriceGroup({ itemId, itemPrice, itemType }) {
   const currentUser = useAuthState();
 
   const toast = useToast();
+
+  useEffect(() => {
+    async function fetchWeek() {
+      try {
+        let res = await fetch(`${ROOT_URL}/configs/week`, {
+          headers: {
+            Authorization: "Bearer " + currentUser.token,
+          },
+        });
+        if (res.status !== 200) {
+          throw new Error("Failed to fetch week.");
+        }
+        let resData = await res.json();
+        setCurrentWeek(resData.week);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    fetchWeek();
+  }, [ROOT_URL, currentUser]);
 
   const handleUpdatePrice = async (event, itemId, newPrice) => {
     event.preventDefault();
@@ -42,18 +64,18 @@ function ItemPriceGroup({ itemId, itemPrice, itemType }) {
         }),
       });
       setIsLoading(false);
+      const resData = await res.json();
       if (res.status !== 200) {
         setPrice(finalPrice);
         toast({
           title: "Updating Price",
-          description: "Updating price failed! Try Again",
+          description: resData.message,
           status: "error",
           duration: 5000,
           isClosable: true,
         });
         throw new Error("Updating price failed!");
       }
-      const resData = await res.json();
       if (res.status === 200) {
         setFinalPrice(resData.itemPrice);
         toast({
@@ -74,6 +96,9 @@ function ItemPriceGroup({ itemId, itemPrice, itemType }) {
     XC: [0, 0.5, 0.65, 0.75, 1, 1.15, 1.25, 1.5, 1.65, 1.75, 2, 2.3, 3],
     SJ: [0, 0.5, 0.65, 0.75, 1, 1.15, 1.25, 1.5, 1.65, 1.75, 2, 2.3, 3],
   };
+
+  console.log(currentWeek);
+  console.log(itemWeek);
 
   return isLoading ? (
     <Flex width="100%" justify="center" align="center">
@@ -105,20 +130,6 @@ function ItemPriceGroup({ itemId, itemPrice, itemType }) {
                 <></>
               )
             )}
-            {/* {price !== 3.0 && <option value={3.0}>$3.00</option>}
-            {price !== 2.3 && <option value={2.3}>$2.30</option>}
-            {price !== 2.0 && <option value={2.0}>$2.00</option>}
-            {price !== 1.75 && <option value={1.75}>$1.75</option>}
-            {price !== 1.65 && <option value={1.65}>$1.65</option>}
-            {price !== 1.5 && <option value={1.5}>$1.50</option>}
-            {price !== 2.0 && <option value={2.0}>$2.00</option>}
-            {price !== 1.25 && <option value={1.25}>$1.25</option>}
-            {price !== 1.15 && <option value={1.15}>$1.15</option>}
-            {price !== 1.0 && <option value={1.0}>$1.00</option>}
-            {price !== 0.75 && <option value={0.75}>$0.75</option>}
-            {price !== 0.65 && <option value={0.65}>$0.65</option>}
-            {price !== 0.5 && <option value={0.5}>$0.50</option>}
-            {price !== 0.0 && <option value={0.0}>$0.00</option>} */}
           </Select>
           <HStack spacing={2}>
             <IconButton
@@ -143,13 +154,15 @@ function ItemPriceGroup({ itemId, itemPrice, itemType }) {
       ) : (
         <>
           <Text>{`$${price.toFixed(2)}`}</Text>
-          <IconButton
-            icon={<FaEdit />}
-            size="xs"
-            onClick={() => {
-              setEditing(true);
-            }}
-          />
+          {itemWeek === currentWeek && (
+            <IconButton
+              icon={<FaEdit />}
+              size="xs"
+              onClick={() => {
+                setEditing(true);
+              }}
+            />
+          )}
         </>
       )}
     </HStack>

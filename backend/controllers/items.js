@@ -3,9 +3,9 @@ const { google } = require("googleapis");
 
 const Item = require("../models/item");
 const Event = require("../models/event");
+const Config = require("../models/config");
 
 const addEvent = require("./events").addEventService;
-const item = require("../models/item");
 
 const datesAreOnSameDay = (first, second) => {
   return (
@@ -234,16 +234,25 @@ exports.updatePrice = async (req, res, next) => {
   const itemId = req.body.itemId;
   const newPrice = req.body.newPrice;
 
+  const { week: currentWeek } = await Config.findOne();
+
   try {
-    let item = await Item.findByIdAndUpdate(
-      itemId,
-      { price: newPrice },
-      { new: true }
-    );
-    res.status(200).json({
-      message: "Item price have been updated successfully",
-      itemPrice: item.price,
-    });
+    let item = await Item.findById(itemId).select("invoicesIndices.week");
+    const itemWeek = item.invoicesIndices.week;
+    if (itemWeek !== currentWeek) {
+      res.status(400).json({
+        message:
+          "Item price can't be updated because item has been already paid for.",
+        itemPrice: item.price,
+      });
+    } else {
+      item.price = newPrice;
+      item.save();
+      res.status(200).json({
+        message: "Item price have been updated successfully",
+        itemPrice: item.price,
+      });
+    }
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -298,6 +307,7 @@ exports.search = async (req, res, next) => {
         done: result.done,
         price: result.price,
         editor: result.editor ? result.editor.name : "",
+        itemWeek: result.invoicesIndices.week,
       })),
     });
   } catch (err) {

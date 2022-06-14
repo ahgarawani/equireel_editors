@@ -69,6 +69,7 @@ function MonthCards({ searchResults }) {
                   itemId={result.id}
                   itemPrice={result.price}
                   itemType={result.type}
+                  itemWeek={result.itemWeek}
                 />
               </>
             )}
