@@ -4,6 +4,7 @@ const { google } = require("googleapis");
 const Item = require("../models/item");
 const Event = require("../models/event");
 const Config = require("../models/config");
+const { distinct } = require("../models/config");
 
 const addEvent = require("./events").addEventService;
 
@@ -383,8 +384,7 @@ exports.sync = async (req, res, next) => {
           !eventName ||
           colorIsRed(horseNo.bgColor) ||
           new RegExp("#N/A|#REF!").test(horseNo.value) ||
-          !horseNo.value ||
-          isNaN(eventName.slice(-4))
+          !horseNo.value
         ) {
           return [];
         }
@@ -450,7 +450,10 @@ exports.sync = async (req, res, next) => {
       };
       //Create types array
       let finalVideos = [];
-      if (new RegExp(xcStr).test(type.value.toLowerCase())) {
+      if (
+        new RegExp(xcStr).test(type.value.toLowerCase()) &&
+        !colorIsRed(horseNo.bgColor)
+      ) {
         finalVideos.push({ ...video, type: "XC" });
       }
       if (
@@ -460,21 +463,6 @@ exports.sync = async (req, res, next) => {
         finalVideos.push({ ...video, type: "SJ" });
       }
       return finalVideos;
-      // return type.value
-      //   .split(" & ")
-      //   .filter((word) => {
-      //     if (
-      //       new RegExp(sjStr).test(word.toLowerCase()) &&
-      //       colorIsRed(type.bgColor)
-      //     )
-      //       return false;
-      //     return new RegExp(xcStr + "|" + sjStr).test(word.toLowerCase());
-      //   })
-      //   .map((word) =>
-      //     new RegExp(xcStr).test(word.toLowerCase())
-      //       ? { ...video, type: "XC" }
-      //       : { ...video, type: "SJ" }
-      //   );
     });
 
     const dbVideos = await Promise.all(

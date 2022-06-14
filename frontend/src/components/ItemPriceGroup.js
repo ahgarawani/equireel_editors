@@ -97,9 +97,6 @@ function ItemPriceGroup({ itemId, itemPrice, itemType, itemWeek }) {
     SJ: [0, 0.5, 0.65, 0.75, 1, 1.15, 1.25, 1.5, 1.65, 1.75, 2, 2.3, 3],
   };
 
-  console.log(currentWeek);
-  console.log(itemWeek);
-
   return isLoading ? (
     <Flex width="100%" justify="center" align="center">
       <Spinner
