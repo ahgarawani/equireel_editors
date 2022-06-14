@@ -69,6 +69,12 @@ function ItemPriceGroup({ itemId, itemPrice, itemType }) {
     }
   };
 
+  const editingValues = {
+    Project: [5, 10],
+    XC: [0, 0.5, 0.65, 0.75, 1, 1.15, 1.25, 1.5, 1.65, 1.75, 2, 2.3, 3],
+    SJ: [0, 0.5, 0.65, 0.75, 1, 1.15, 1.25, 1.5, 1.65, 1.75, 2, 2.3, 3],
+  };
+
   return isLoading ? (
     <Flex width="100%" justify="center" align="center">
       <Spinner
@@ -92,7 +98,14 @@ function ItemPriceGroup({ itemId, itemPrice, itemType }) {
               setPrice(parseFloat(e.target.value));
             }}
           >
-            {price !== 3.0 && <option value={3.0}>$3.00</option>}
+            {editingValues[itemType].map((value) =>
+              price !== value ? (
+                <option value={value}>${`${value.toFixed(2)}`}</option>
+              ) : (
+                <></>
+              )
+            )}
+            {/* {price !== 3.0 && <option value={3.0}>$3.00</option>}
             {price !== 2.3 && <option value={2.3}>$2.30</option>}
             {price !== 2.0 && <option value={2.0}>$2.00</option>}
             {price !== 1.75 && <option value={1.75}>$1.75</option>}
@@ -105,7 +118,7 @@ function ItemPriceGroup({ itemId, itemPrice, itemType }) {
             {price !== 0.75 && <option value={0.75}>$0.75</option>}
             {price !== 0.65 && <option value={0.65}>$0.65</option>}
             {price !== 0.5 && <option value={0.5}>$0.50</option>}
-            {price !== 0.0 && <option value={0.0}>$0.00</option>}
+            {price !== 0.0 && <option value={0.0}>$0.00</option>} */}
           </Select>
           <HStack spacing={2}>
             <IconButton
@@ -130,15 +143,13 @@ function ItemPriceGroup({ itemId, itemPrice, itemType }) {
       ) : (
         <>
           <Text>{`$${price.toFixed(2)}`}</Text>
-          {itemType !== "Project" && (
-            <IconButton
-              icon={<FaEdit />}
-              size="xs"
-              onClick={() => {
-                setEditing(true);
-              }}
-            />
-          )}
+          <IconButton
+            icon={<FaEdit />}
+            size="xs"
+            onClick={() => {
+              setEditing(true);
+            }}
+          />
         </>
       )}
     </HStack>
